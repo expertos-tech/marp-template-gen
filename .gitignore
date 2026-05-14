@@ -1,0 +1,7 @@
+tmp/
+output/
+scripts/node_modules/
+scripts/.npm-installed
+scripts/npm-debug.log*
+scripts/.cache/
+scripts/output/
