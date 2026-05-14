@@ -33,6 +33,7 @@ npm --prefix scripts run generate-slides -- <model> <source> [target]
 npm --prefix scripts run embed-images -- <source.md> [target.md]
 npm --prefix scripts run marp-export -- <type> <source.md> [target]
 npm --prefix scripts run strip-instructions -- <source.md> [target.md]
+npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
 ```
 
 ## `pre-run`
@@ -116,3 +117,25 @@ Removes instruction HTML comments from a filled Marp Markdown, preserving Marp c
 ```markdown
 <!-- _class: cover -->
 ```
+
+## `apply-patch` (planned)
+
+Planned command to execute the MTG Patch Protocol with deterministic validations of security and Git state:
+
+```bash
+npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
+```
+
+Planned scope for v1:
+
+- read textual protocol in Markdown;
+- validate paths and block writing outside the repository root;
+- require a clean working tree by default for execution with saving;
+- create a temporary branch on execution with saving;
+- simulate without saving when `--dry-run` is provided;
+- accept `--force` only to ignore the clean working tree validation;
+- do not execute shell commands declared in the protocol, only report them.
+
+The implementation of the executor will be done in a later step, in the planned file `scripts/apply-patch-protocol.mjs`.
+
+The reference documentation for the protocol is in `docs/mtg-patch-protocol.md`.

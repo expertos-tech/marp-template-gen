@@ -315,6 +315,7 @@ Mandatory rule: internal commands should not be displayed by the `*help` command
 |---|---|---|
 | `*check-git-cli` | Checks if `git` and `gh` are available in the session. | - |
 | `*pre-run` | Checks local script readiness before Node commands. | - |
+| `*apply-patch <file.md> [--dry-run] [--force]` | Executes local MTG Patch Protocol with security and Git validations. | `<file.md>`<br>`[--dry-run]`<br>`[--force]` |
 | `*strip-instructions <source.md> [target.md]` | Removes instruction HTML comments from filled Marp Markdown. | `<source.md>`<br>`[target.md]` |
 
 Technical commands associated with the Marp workflow:
@@ -337,7 +338,7 @@ Shows available command shortcuts. The command should use section `8.2 Command L
 * `*help <group>` shows commands from the requested group, using subtitles from section 8.2.
 * `*help --all` shows common commands and internal commands.
 * `*help internal-commands` shows only internal commands.
-* `*help *pre-run` and `*help *strip-instructions` can show specific help for those internal commands.
+* `*help *pre-run`, `*help *apply-patch` and `*help *strip-instructions` can show specific help for those internal commands.
 * Internal commands should not appear in standard `*help`. They can only be displayed with `*help --all`, `*help internal-commands` or specific help for an internal command.
 
 ##### Parameters
@@ -694,6 +695,40 @@ npm --prefix scripts install
 ```
 
 * The `postinstall` creates `scripts/.npm-installed`, which is ignored by Git and used as a local marker.
+
+#### `*apply-patch <file.md> [--dry-run] [--force]`
+
+Internal command to execute the MTG Patch Protocol from a reviewable Markdown file.
+
+##### Rules/Validations
+
+* This command is internal and should not appear in standard `*help`.
+* It can only be displayed with `*help --all`, `*help internal-commands` or specific help, such as `*help *apply-patch`.
+* Chat name: `*apply-patch <file.md> [--dry-run] [--force]`.
+* Planned npm command: `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`.
+* Default behavior saves changes and requires a clean working tree before saving.
+* Every execution that saves changes creates a temporary branch before applying changes.
+* `--dry-run` validates and simulates, without saving changes.
+* `--force` only ignores the clean working tree requirement.
+* `--force` does not ignore merge, rebase, cherry-pick, revert, conflict, invalid protocol, or unsafe path.
+* The v1 executor does not execute shell commands contained in the protocol, it only lists them as recommended validation.
+* The executor must validate paths to block absolute paths, `..` and writing outside the repository root.
+* The executor must generate a textual report ready to paste into the chat.
+* The implementation of the executor will be done in a later step.
+
+##### Parameters
+
+* `<file.md>`
+
+Markdown file with instructions for the MTG Patch Protocol.
+
+* `[--dry-run]`
+
+Executes validations and simulation without saving changes.
+
+* `[--force]`
+
+Ignores only the clean working tree requirement, keeping the other protections.
 
 #### `*strip-instructions <source.md> [target.md]`
 
