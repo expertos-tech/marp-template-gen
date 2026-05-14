@@ -142,46 +142,37 @@ Marp Template Gen e um projeto local para criar templates Marp reutilizaveis e c
 ## 6. Regras de Git
 
 ### 6.1 Convencoes de nomes de branch
-
-Use nomes semanticos de branch: `tipo/descricao-curta` ou `tipo/escopo/descricao-curta`.
-
-Regras:
-
-* Use letras minusculas.
-* Use hifens para separar palavras.
-* Use um tipo semantico permitido.
-
-Exemplos:
-
-```text
-feat/model-01-template
-docs/template-instructions
-chore/node-render-scripts
-```
+Siga convencoes semanticas: `tipo/descricao-curta` ou `tipo/escopo/descricao-curta`.
+* **Minusculas:** Sempre use letras minusculas.
+* **Separadores:** Use hifens (`-`) para separar palavras.
+* **Tipos:** Devem corresponder estritamente aos tipos de commit permitidos.
+* **Exemplos:** `feat/busca-semantica`, `fix(seguranca)/path-traversal`, `docs/refactor-readme`.
 
 ### 6.2 Padroes de mensagem de commit
+Siga as convencoes de commit semantico usando o formato `tipo(escopo): descricao`.
 
-Use convencoes de commit semantico:
-
-```text
-tipo(escopo): descricao
-```
-
-Tipos permitidos:
-
-* `feat`: Novo recurso ou capacidade de modelo.
+**Tipos permitidos:**
+* `feat`: Novo recurso ou ferramenta.
 * `fix`: Correcao de bug.
-* `docs`: Mudancas somente de documentacao.
-* `refactor`: Mudanca que nao corrige bug nem adiciona recurso.
-* `test`: Mudancas de validacao ou testes.
-* `chore`: Tooling, scripts, dependencias ou manutencao.
+* `docs`: Mudancas apenas em documentacao.
+* `refactor`: Mudanca de codigo que nao corrige bug nem adiciona recurso.
+* `test`: Adicao de testes ausentes ou correcao de testes existentes.
+* `chore`: Mudancas no processo de build ou ferramentas e bibliotecas auxiliares.
 
-Regras:
+**Regras de formato:**
+* **Titulo:** Conciso, em minusculas, incluindo um escopo opcional entre parenteses.
+* **Corpo:** Uma lista com marcadores explicando **o porquê** da mudanca e sua intencao funcional.
+* **Foco funcional:** Explique o proposito e o impacto; nao apenas liste as mudancas de codigo.
+* **Regra obrigatoria e mandatória, sem excecao:** Nao incluir `Co-authored-by:` ou qualquer outro trailer/metadado semelhante na mensagem de commit.
 
-* Mantenha o titulo conciso e em minusculas.
-* Use corpo quando o motivo ou impacto nao for obvio.
-* Explique a intencao funcional, nao apenas os arquivos alterados.
-* Nao inclua trailers `Co-authored-by`.
+**Exemplos:**
+```text
+docs(refactor): consolidar documentacao para melhor navegacao
+
+* Criar um indice central em docs/README.md para facilitar a descoberta de arquivos.
+* Mover principios de design de IA para um arquivo dedicado para evitar redundancia no prompt do sistema.
+* Atualizar diretivas do agente para focar estritamente em seguranca operacional.
+```
 <!-- FIM REGRAS-DE-GIT -->
 
 ---
@@ -274,7 +265,10 @@ Regras:
 * O reset deve substituir integralmente o arquivo por este template:
 
 ```markdown
-Executar todas as instrucoes contidas nesse arquivo.
+# OVERVIEW
+* Executar todas as instrucoes contidas nesse arquivo.
+* Se não houver instrução contrária abaixo, sempre planejar e executar me ondas.
+* Exiba um resumo no final de tudo que foi feito
 
 ---
 
