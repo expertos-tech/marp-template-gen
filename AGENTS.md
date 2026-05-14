@@ -172,6 +172,35 @@ docs(refactor): consolidar documentacao para melhor navegacao
 * Mover principios de design de IA para um arquivo dedicado para evitar redundancia no prompt do sistema.
 * Atualizar diretivas do agente para focar estritamente em seguranca operacional.
 ```
+
+### 6.3 Uso de git e GitHub CLI
+
+Comandos de versionamento, publicacao e integracao com GitHub devem usar `git` ou `gh`, conforme o caso.
+
+Regras obrigatorias:
+
+* Use `git` para operacoes locais de versionamento, como status, diff, branch, checkout, add, commit, log, stash e merge.
+* Use `gh` para operacoes especificas do GitHub, como autenticacao, repositorio remoto, pull requests, issues, releases, GitHub Actions e verificacoes relacionadas ao GitHub.
+* Antes de executar qualquer comando que dependa do `gh`, o agente deve saber se a CLI `gh` esta disponivel na sessao.
+* Se a disponibilidade do `gh` ja tiver sido verificada e registrada no contexto da sessao, siga diretamente para o comando solicitado.
+* Se a disponibilidade do `gh` ainda nao tiver sido verificada, execute primeiro o comando interno `*check-git-cli`.
+* O resultado do `*check-git-cli` deve ser tratado como contexto da sessao.
+* Se `gh` nao estiver disponivel, use apenas `git` para operacoes locais e informe quando uma operacao exigir GitHub CLI.
+* Nao invente substitutos para comandos `gh` quando a operacao depender de GitHub CLI.
+* Nao execute comandos destrutivos, publicacao remota ou mudancas em repositorio remoto sem instrucao explicita.
+
+Comandos adicionais uteis com `gh`:
+
+* `gh --help`: verifica se a GitHub CLI esta disponivel e exibe ajuda geral.
+* `gh auth status`: verifica o estado de autenticacao no GitHub.
+* `gh repo view`: mostra informacoes do repositorio GitHub associado ao remoto atual.
+* `gh pr status`: mostra o estado dos pull requests relacionados ao usuario e ao repositorio.
+* `gh pr list`: lista pull requests do repositorio.
+* `gh pr view`: mostra detalhes de um pull request.
+* `gh issue list`: lista issues do repositorio.
+* `gh run list`: lista execucoes recentes do GitHub Actions.
+* `gh run view`: mostra detalhes de uma execucao do GitHub Actions.
+
 <!-- FIM REGRAS-DE-GIT -->
 
 ---
@@ -285,6 +314,7 @@ Regra mandatoria: comandos internos nao devem ser exibidos pelo comando `*help`,
 
 | comando | descrição | lista de parametros |
 |---|---|---|
+| `*check-git-cli` | Verifica se `git` e `gh` estao disponiveis na sessao. | - |
 | `*pre-run` | Verifica preparo local dos scripts antes de comandos Node. | - |
 | `*strip-instructions <source.md> [target.md]` | Remove comentarios HTML de instrucao de Markdown Marp preenchido. | `<source.md>`<br>`[target.md]` |
 
@@ -543,6 +573,8 @@ Cria um commit semantico para o trabalho aprovado atual.
 * Sem `--all`, o agente deve incluir apenas mudancas ja preparadas ou explicitamente selecionadas pelo usuario.
 * Com `--all`, o agente pode adicionar todas as mudancas aprovadas antes de criar o commit.
 * O comando nunca deve incluir mudancas nao aprovadas pelo usuario.
+* Antes de executar comandos de commit, use `git` como ferramenta principal.
+* Se a tarefa exigir informacao do GitHub, remoto GitHub, pull request ou autenticacao GitHub, verifique antes se `gh` esta disponivel usando `*check-git-cli`, salvo se essa informacao ja estiver registrada no contexto da sessao.
 * O commit deve seguir as regras da secao `6. Regras de Git`.
 * A mensagem deve seguir o formato `tipo(escopo): descricao`.
 * O corpo do commit deve explicar o motivo e a intencao funcional da mudanca.
@@ -561,6 +593,8 @@ Envia commits para o remoto configurado.
 
 ##### Regras/Validações
 
+* Antes de executar o push, use `git` como ferramenta principal para verificar branch, remoto e estado local.
+* Se a tarefa exigir informacao do GitHub, autenticacao GitHub ou validacao adicional do repositorio remoto, verifique antes se `gh` esta disponivel usando `*check-git-cli`, salvo se essa informacao ja estiver registrada no contexto da sessao.
 * O agente deve verificar o remoto configurado antes de enviar commits.
 * O comando nao deve criar commits novos por conta propria.
 * Se houver risco de publicar mudancas nao aprovadas, o agente deve parar e pedir confirmacao.
@@ -584,6 +618,48 @@ Carrega contexto anterior quando houver local combinado para arquivo de sessao.
 * O agente deve carregar contexto anterior apenas quando houver local combinado para arquivo de sessao.
 * O conteudo carregado deve ser tratado como contexto auxiliar, nao como substituto das regras do `AGENTS.md`.
 * Se o arquivo combinado nao existir, o agente deve informar a ausencia sem inventar contexto.
+
+#### `*check-git-cli`
+
+Comando interno usado para verificar se as CLIs `git` e `gh` estao disponiveis na sessao.
+
+##### Regras/Validações
+
+* Este comando e interno e nao deve aparecer na ajuda padrao do `*help`.
+* Ele so pode ser exibido com `*help --all`, `*help comandos-internos` ou ajuda especifica, como `*help *check-git-cli`.
+* Deve ser executado antes de comandos que dependam de `gh`, quando a disponibilidade do `gh` ainda nao tiver sido verificada na sessao.
+* Se a disponibilidade do `gh` ja estiver registrada no contexto da sessao, nao execute novamente este comando sem necessidade.
+* O agente deve registrar no contexto da sessao se `git` e `gh` estao disponiveis.
+* O agente deve registrar tambem se `gh` parece responder como GitHub CLI valida.
+* Se `git` nao estiver disponivel, comandos de versionamento devem parar e reportar o problema.
+* Se `gh` nao estiver disponivel, comandos locais com `git` ainda podem continuar quando nao dependerem do GitHub CLI.
+* Este comando nao deve alterar arquivos.
+* Este comando nao deve instalar dependencias.
+* Este comando nao deve autenticar o usuario.
+* Este comando nao deve executar `gh auth login`.
+
+Execute estes comandos:
+
+git --version
+gh --help
+
+Interprete o resultado:
+
+* Se `git --version` responder com sucesso, registre `git_disponivel: sim`.
+* Se `git --version` falhar, registre `git_disponivel: nao`.
+* Se `gh --help` responder com sucesso e a saida identificar a GitHub CLI, registre `gh_disponivel: sim`.
+* Se `gh --help` falhar, registre `gh_disponivel: nao`.
+
+Formato de resumo esperado:
+
+CHECK GIT CLI REPORT
+
+git_disponivel: sim|nao
+gh_disponivel: sim|nao
+gh_parece_github_cli: sim|nao
+acao_recomendada:
+- usar git para operacoes locais
+- usar gh apenas quando disponivel e quando a tarefa exigir GitHub CLI
 
 #### `*pre-run`
 
