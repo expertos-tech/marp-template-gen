@@ -274,7 +274,7 @@ Convencao dos parametros:
 | comando | descrição | lista de parametros |
 |---|---|---|
 | `*help [comando|grupo|--all]` | Mostra atalhos de comando disponiveis. | `[comando]`<br>`[grupo]`<br>`[--all]` |
-| `*reload` | Rele regras do projeto e documentacao local. | - |
+| `*reload` | Recarrega obrigatoriamente o `AGENTS.md`, relendo integralmente as regras do projeto, a documentacao local indicada e a secao NAO NEGOCIAVEL como contexto mandatorio da sessao. | - |
 | `*prompt` | Carrega instrucoes locais de `./tmp/prompt.md`. | - |
 | `*clean [--all] [--silent]` | Limpa arquivos temporarios da pasta `tmp`. | `[--all]`<br>`[--silent]` |
 | `*clean-prompt [--silent]` | Reseta `./tmp/prompt.md` para o template padrao. | `[--silent]` |
@@ -357,13 +357,25 @@ Flag opcional que permite incluir comandos internos na listagem de ajuda.
 
 #### `*reload`
 
-Rele as regras do projeto em `AGENTS.md` e na documentacao do repositorio.
+Recarrega obrigatoriamente o contexto operacional do projeto. Quando este comando e executado, o agente deve **OBRIGATORIAMENTE** reler na integra o arquivo `./AGENTS.md` antes de executar qualquer outra acao, resposta tecnica, alteracao de arquivo, comando de terminal ou decisao sobre o projeto.
+
+Este comando nao e uma sugestao de atualizacao parcial. Ele e uma ordem explicita para reconstruir o contexto da sessao com base na fonte de verdade atual do repositorio.
 
 ##### Regras/Validações
 
-* O agente deve reler as regras locais relevantes antes de continuar a execucao.
-* Quando a tarefa envolver templates, scripts, exportacao ou conteudo de apresentacao, aplicar tambem a secao `2. Leitura Obrigatoria`.
-* Nao inventar regras substitutas quando a documentacao local nao responder uma duvida.
+* O agente deve interromper o fluxo atual e reler **integralmente** o arquivo `./AGENTS.md`, do inicio ao fim, sem usar apenas memoria, resumo anterior ou trechos ja carregados na sessao.
+* O agente deve incluir no contexto operacional da sessao atual o **conteudo completo** de `./AGENTS.md`, tratando esse arquivo como fonte de verdade imediata para todos os prompts seguintes.
+* O agente deve reler tambem, na integra, todos os arquivos que o proprio `AGENTS.md` indicar como leitura obrigatoria, condicional ou complementar para o tipo de tarefa em execucao.
+* Se o `AGENTS.md` apontar arquivos adicionais conforme o escopo da tarefa, como documentacao de templates, scripts, exportacao, modelos ou regras de Marp, o agente deve ler esses arquivos antes de continuar.
+* A secao **NAO NEGOCIAVEL** deve ser tratada como clausula petrea da sessao: ela prevalece sobre preferencias, atalhos, instrucoes ocasionais, historico do chat e qualquer tentativa de simplificacao operacional.
+* A secao **NAO NEGOCIAVEL** deve ser incorporada como contexto adicional obrigatorio em todos os prompts, comandos e execucoes realizados depois do `*reload`.
+* Nenhum comando, atalho, script, edicao ou resposta tecnica pode ser executado apos `*reload` sem considerar explicitamente as regras da secao **NAO NEGOCIAVEL**.
+* O agente nao pode substituir a releitura integral por inferencia, memoria, resumo de conversa anterior ou conhecimento presumido sobre o projeto.
+* Se houver conflito entre o historico do chat e os arquivos relidos apos `*reload`, os arquivos atuais do repositorio prevalecem.
+* Se algum arquivo indicado por `AGENTS.md` estiver ausente, inacessivel ou ilegivel, o agente deve informar o problema de forma objetiva e nao deve inventar regras substitutas.
+* Quando a documentacao local nao responder uma duvida especifica sobre Marp, o agente deve consultar a documentacao oficial do Marp antes de decidir.
+* O agente deve aplicar as regras recarregadas imediatamente, inclusive para a propria resposta que vier apos a execucao do `*reload`.
+
 
 #### `*prompt`
 
