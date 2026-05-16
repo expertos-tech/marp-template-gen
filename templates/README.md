@@ -1,86 +1,86 @@
-# Templates Marp
+# Marp Templates
 
-Este diretorio concentra modelos reutilizaveis para transformar conteudo Markdown comum em apresentacoes Marp.
+This directory brings together reusable models to transform common Markdown content into Marp presentations.
 
-## Modelos disponiveis
+## Available Models
 
-| Modelo | Uso principal | Instrucoes |
+| Model | Main Use | Instructions |
 | --- | --- | --- |
-| `model-01` | Apresentacoes editoriais em 16:9 com capa visual, secoes, conteudo, cards, linha do tempo, imagem e fechamento | [`model-01/instructions.md`](./model-01/instructions.md) |
+| `model-01` | Editorial presentations in 16:9 with visual cover, sections, content, cards, timeline, image and closing | [`model-01/instructions.md`](./model-01/instructions.md) |
 
-## Fluxo de conversao
+## Conversion Workflow
 
-O fluxo padrao tem quatro arquivos conceituais:
+The standard workflow has four conceptual files:
 
-1. Markdown comum de entrada, sem diretivas Marp.
-2. `model.md`, que define a estrutura generica com placeholders `{{...}}`.
-3. Markdown Marp preenchido, por exemplo `apresentacao-marp.md`.
-4. Artefatos exportados: PDF, HTML, PNG de preview e PPTX.
+1. Common Markdown input, without Marp directives.
+2. `model.md`, which defines the generic structure with placeholders `{{...}}`.
+3. Filled Marp Markdown, for example `presentation-marp.md`.
+4. Exported artifacts: PDF, HTML, preview PNG and PPTX.
 
-O `model.md` nao substitui placeholders automaticamente. Ele e um contrato de preenchimento: cada `{{CHAVE}}` deve ser trocada pelo conteudo final, e os comentarios HTML explicam o papel de cada chave.
+The `model.md` does not replace placeholders automatically. It is a filling contract: each `{{KEY}}` must be replaced with the final content, and the HTML comments explain the role of each key.
 
-O Markdown Marp final deve ser autossuficiente. O template pode usar `theme.css` e `assets/` como fontes de organizacao, mas o arquivo gerado deve embutir os estilos necessarios no proprio `.md`, preferencialmente em um bloco `<style>...</style>`, e nao depender de arquivos externos para renderizacao basica.
+The final Marp Markdown must be self-contained. The template can use `theme.css` and `assets/` as organization sources, but the generated file must embed the necessary styles into the `.md` itself, preferably in a `<style>...</style>` block, and not depend on external files for basic rendering.
 
-Depois do preenchimento, remova os comentarios de instrucao com o script deterministicamente:
+After filling, remove the instruction comments deterministically:
 
 ```bash
-npm --prefix scripts run strip-instructions -- apresentacao-marp.md
+npm --prefix scripts run strip-instructions -- presentation-marp.md
 ```
 
-Esse script preserva diretivas Marp essenciais, como `<!-- _class: cover -->`, e remove comentarios HTML de orientacao que nao devem ir para o arquivo final.
+This script preserves essential Marp directives, such as `<!-- _class: cover -->`, and removes HTML guidance comments that should not go into the final file.
 
-## Ferramentas Node
+## Node Tools
 
-Todas as geracoes e exportacoes devem usar ferramentas Node instaladas no projeto ou executadas via `npx`.
+All generations and exports should use Node tools installed in the project or run via `npx`.
 
-Antes de usar os scripts locais, instale a pasta `scripts/`:
+Before using local scripts, install the `scripts/` folder:
 
 ```bash
 npm --prefix scripts install
 ```
 
-Antes de conversoes e validacoes, rode o preflight:
+Before conversions and validations, run the preflight:
 
 ```bash
 npm --prefix scripts run pre-run
 ```
 
-Comandos esperados apos a criacao do `package.json`:
+Expected commands after creating `package.json`:
 
 ```bash
-npm run render:pdf -- templates/model-01/apresentacao-marp.md
-npm run render:html -- templates/model-01/apresentacao-marp.md
-npm run render:preview -- templates/model-01/apresentacao-marp.md
-npm run render:pptx -- templates/model-01/apresentacao-marp.md
+npm run render:pdf -- templates/model-01/presentation-marp.md
+npm run render:html -- templates/model-01/presentation-marp.md
+npm run render:preview -- templates/model-01/presentation-marp.md
+npm run render:pptx -- templates/model-01/presentation-marp.md
 ```
 
-Para validar o template modular diretamente, o comando base do Marp CLI pode registrar o tema local:
+To validate the modular template directly, the base Marp CLI command can register the local theme:
 
 ```bash
-npx marp --theme ./templates/model-01/theme.css arquivo.md -o arquivo.pdf
+npx marp --theme ./templates/model-01/theme.css file.md -o file.pdf
 ```
 
-Para arquivos Marp finais gerados, prefira renderizar sem `--theme`, pois o CSS necessario deve estar embutido no proprio Markdown.
+For generated final Marp files, prefer rendering without `--theme`, since the necessary CSS must be embedded in the Markdown itself.
 
-## Convencoes
+## Conventions
 
-- Todo modelo deve ter um `model.md` com placeholders genericos.
-- Todo modelo deve ter um `instructions.md` documentando tipos de slides, placeholders e regras de conversao.
-- A raiz `templates/README.md` e o unico README da area de templates.
-- Modelos individuais nao devem ter `README.md`; use `instructions.md`.
-- Assets devem ficar dentro da pasta do proprio modelo.
-- Arquivos Marp finais gerados devem ser autossuficientes: CSS embutido e assets essenciais incorporados ou substituidos.
-- Saidas geradas devem ficar em uma pasta `output/` do modelo ou em caminho temporario combinado na etapa de validacao.
+- Every model must have a `model.md` with generic placeholders.
+- Every model must have an `instructions.md` documenting slide types, placeholders and conversion rules.
+- The root `templates/README.md` is the only README in the templates area.
+- Individual models should not have `README.md`; use `instructions.md`.
+- Assets should be inside the model's own folder.
+- Generated final Marp files must be self-contained: embedded CSS and essential assets built in or replaced.
+- Generated outputs should be in an `output/` folder of the model or in temporary path combined in the validation step.
 
-## Validacao interativa
+## Interactive Validation
 
-A implementacao deste projeto deve seguir ondas:
+The implementation of this project should follow waves:
 
-1. Validar documentacao e taxonomia do modelo.
-2. Validar `model.md`.
-3. Validar scripts Node, `pre-run` e limpeza de comentarios de instrucao no Markdown preenchido.
-4. Validar tema visual e assets.
-5. Validar conversao de conteudo real para Marp.
-6. Validar exportacoes PDF, HTML, PNG e PPTX.
+1. Validate model documentation and taxonomy.
+2. Validate `model.md`.
+3. Validate Node scripts, `pre-run` and instruction comment cleaning in filled Markdown.
+4. Validate visual theme and assets.
+5. Validate conversion of real content to Marp.
+6. Validate PDF, HTML, PNG and PPTX exports.
 
-Cada onda deve apresentar arquivos alterados, comandos usados, resultados observados e pendencias antes de seguir para a proxima.
+Each wave should present changed files, used commands, observed results and pending items before moving to the next.
