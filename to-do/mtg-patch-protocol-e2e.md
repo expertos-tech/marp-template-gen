@@ -344,3 +344,29 @@ Objective:
 3. Adjust documentation if necessary.
 4. Only then create Prompt 3 to implement `scripts/apply-patch-protocol.mjs`.
 5. Then test in `tmp/`.
+
+## Validation result
+
+Status: validated E2E.
+
+Validated on branch: developer
+
+Implementation commit:
+
+- `3b8d56ec7675b230bc9aec718e56a94e0ffcab9b`
+  - `feat(scripts): implement mtg patch protocol v1 executor`
+
+Checks completed:
+
+- `npm --prefix scripts run pre-run`
+- `npm --prefix scripts run apply-patch -- --help`
+- controlled `--dry-run` test in `tmp/`
+- real write test in `tmp/` without `--force`
+- temporary branch creation confirmed
+- `[VALIDATE]` commands listed but not executed
+- returned to `developer`
+- final Git status clean
+
+Known note:
+
+- Test files were kept under `tmp/`, so they did not leave tracked repository changes.
