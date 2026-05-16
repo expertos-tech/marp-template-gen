@@ -6,21 +6,21 @@ paginate: false
 ---
 
 <!--
-Tipo: embedded-style
-Uso: tornar o Markdown Marp final autossuficiente.
-Instrucao: substitua EMBEDDED_MODEL_CSS pelo CSS necessario do modelo antes da renderizacao final.
-Obrigatorio: arquivos Marp gerados devem manter este bloco <style> preenchido para nao depender de theme.css.
+Type: embedded-style
+Use: make the final Marp Markdown self-contained.
+Instruction: replace EMBEDDED_MODEL_CSS with necessary CSS of the model before final rendering.
+Required: generated Marp files must keep this filled <style> block to not depend on theme.css.
 -->
 <style>
 {{EMBEDDED_MODEL_CSS}}
 </style>
 
 <!--
-Tipo: cover
-Uso: abertura principal da apresentacao.
-Instrucao: substitua CONTENT_TITLE pelo titulo central e CONTENT_SUBTITLE por uma pergunta-guia ou tese curta.
-Opcional: remova CONTENT_META se nao houver autoria, data, turma ou evento.
-Opcional: COVER_IMAGE pode apontar para uma imagem de fundo quando o tema nao definir uma imagem padrao.
+Type: cover
+Use: main opening of the presentation.
+Instruction: replace CONTENT_TITLE with the central title and CONTENT_SUBTITLE with a guiding question or short thesis.
+Optional: remove CONTENT_META if there is no authorship, date, class or event.
+Optional: COVER_IMAGE can point to a background image when the theme does not define a default image.
 -->
 <!-- _class: cover -->
 <!-- COVER_IMAGE: {{COVER_IMAGE}} -->
@@ -34,10 +34,10 @@ Opcional: COVER_IMAGE pode apontar para uma imagem de fundo quando o tema nao de
 ---
 
 <!--
-Tipo: section-cover
-Uso: abertura de bloco tematico ou mudanca de assunto.
-Instrucao: SECTION_TITLE deve nomear a secao. SECTION_LABEL pode ser numero, modulo ou marcador curto.
-Opcional: remova SECTION_LABEL e SECTION_SUBTITLE se nao forem necessarios.
+Type: section-cover
+Use: opening of thematic block or change of subject.
+Instruction: SECTION_TITLE must name the section. SECTION_LABEL can be a number, module or short marker.
+Optional: remove SECTION_LABEL and SECTION_SUBTITLE if they are not necessary.
 -->
 <!-- _class: section-cover -->
 
@@ -50,10 +50,10 @@ Opcional: remova SECTION_LABEL e SECTION_SUBTITLE se nao forem necessarios.
 ---
 
 <!--
-Tipo: content
-Uso: explicacao direta com titulo e corpo.
-Instrucao: CONTENT_BODY aceita paragrafo curto ou lista Markdown.
-Opcional: CONTENT_NOTE deve ser usado apenas para um destaque final curto.
+Type: content
+Use: direct explanation with title and body.
+Instruction: CONTENT_BODY accepts short paragraph or Markdown list.
+Optional: CONTENT_NOTE should be used only for a short final highlight.
 -->
 <!-- _class: content -->
 
@@ -66,9 +66,9 @@ Opcional: CONTENT_NOTE deve ser usado apenas para um destaque final curto.
 ---
 
 <!--
-Tipo: two-columns
-Uso: comparacao, causa e efeito, antes e depois, problema e resposta.
-Instrucao: mantenha as duas colunas equilibradas em volume de texto.
+Type: two-columns
+Use: comparison, cause and effect, before and after, problem and response.
+Instruction: keep the two columns balanced in text volume.
 -->
 <!-- _class: two-columns -->
 
@@ -94,10 +94,10 @@ Instrucao: mantenha as duas colunas equilibradas em volume de texto.
 ---
 
 <!--
-Tipo: cards
-Uso: conjunto de 2 a 4 categorias equivalentes.
-Instrucao: remova cards nao usados. Cada card deve ter titulo curto e descricao objetiva.
-Opcional: CARD_X_ICON pode ser texto, nome de icone ou caminho de asset, conforme o tema suportar.
+Type: cards
+Use: set of 2 to 4 equivalent categories.
+Instruction: remove unused cards. Each card should have a short title and objective description.
+Optional: CARD_X_ICON can be text, icon name or asset path, depending on what the theme supports.
 -->
 <!-- _class: cards -->
 
@@ -145,10 +145,10 @@ Opcional: CARD_X_ICON pode ser texto, nome de icone ou caminho de asset, conform
 ---
 
 <!--
-Tipo: timeline
-Uso: sequencia historica, processo ou etapas numeradas.
-Instrucao: use LABEL para periodo ou numero, TITLE para o marco e BODY para a explicacao.
-Opcional: remova itens nao usados.
+Type: timeline
+Use: historical sequence, process or numbered stages.
+Instruction: use LABEL for period or number, TITLE for the landmark and BODY for the explanation.
+Optional: remove unused items.
 -->
 <!-- _class: timeline -->
 
@@ -196,10 +196,10 @@ Opcional: remova itens nao usados.
 ---
 
 <!--
-Tipo: quote
-Uso: tese, critica, definicao, insight ou virada argumentativa.
-Instrucao: QUOTE_TEXT deve ser uma frase forte e curta o bastante para leitura em tela.
-Opcional: remova QUOTE_ATTRIBUTION se nao houver fonte, autoria ou contexto.
+Type: quote
+Use: thesis, criticism, definition, insight or argumentative turn.
+Instruction: QUOTE_TEXT should be a strong phrase and short enough for screen reading.
+Optional: remove QUOTE_ATTRIBUTION if there is no source, authorship or context.
 -->
 <!-- _class: quote -->
 
@@ -210,10 +210,10 @@ Opcional: remova QUOTE_ATTRIBUTION se nao houver fonte, autoria ou contexto.
 ---
 
 <!--
-Tipo: image-focus
-Uso: slide em que a imagem e o elemento principal.
-Instrucao: IMAGE_SRC deve ser caminho local ou URL autorizada. IMAGE_ALT descreve a imagem.
-Opcional: CONTENT_TITLE e IMAGE_CAPTION podem ser removidos quando a imagem for autoexplicativa.
+Type: image-focus
+Use: slide where the image is the main element.
+Instruction: IMAGE_SRC should be a local path or authorized URL. IMAGE_ALT describes the image.
+Optional: CONTENT_TITLE and IMAGE_CAPTION can be removed when the image is self-explanatory.
 -->
 <!-- _class: image-focus -->
 
@@ -226,10 +226,10 @@ Opcional: CONTENT_TITLE e IMAGE_CAPTION podem ser removidos quando a imagem for 
 ---
 
 <!--
-Tipo: closing
-Uso: encerramento, pergunta final ou chamada de acao.
-Instrucao: CLOSING_TITLE deve ser a mensagem final. CLOSING_SUBTITLE complementa ou aponta o proximo passo.
-Opcional: remova CLOSING_SUBTITLE quando o encerramento for apenas uma frase.
+Type: closing
+Use: closing, final question or call to action.
+Instruction: CLOSING_TITLE should be the final message. CLOSING_SUBTITLE complements or points to the next step.
+Optional: remove CLOSING_SUBTITLE when the closing is just one phrase.
 -->
 <!-- _class: closing -->
 

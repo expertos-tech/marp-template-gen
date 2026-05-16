@@ -1,66 +1,66 @@
-# TODO: Conversao de imagens para base-64 (Markdown Marp autossuficiente)
+# TODO: Convert Images to Base-64 (Self-Contained Marp Markdown)
 
-Contexto: o projeto exige que o Markdown Marp gerado seja autossuficiente. Isso inclui imagens, que nao devem apontar para arquivos externos. O formato alvo e `data:` URI com base-64.
+Context: the project requires generated Marp Markdown to be self-contained. This includes images, which should not point to external files. The target format is `data:` URI with base-64.
 
-## Objetivo
+## Goal
 
-Adicionar uma etapa automatica para embutir imagens como base-64 no arquivo `.md` final gerado, evitando dependencia de `assets/` ou caminhos locais.
+Add an automatic step to embed images as base-64 in the final generated `.md` file, avoiding dependency on `assets/` or local paths.
 
-## Novo script (obrigatorio)
+## New Script (Required)
 
-Criar um novo script Node em `scripts/`:
+Create a new Node script in `scripts/`:
 
-- arquivo: `scripts/embed-images.mjs`
-- comando npm: adicionar em `scripts/package.json` como `embed-images`
-- uso:
+- file: `scripts/embed-images.mjs`
+- npm command: add in `scripts/package.json` as `embed-images`
+- use:
 
 ```bash
 npm --prefix scripts run embed-images -- <source.md> [target.md]
 ```
 
-## Regras de conversao
+## Conversion Rules
 
-O script deve:
+The script should:
 
-- Ler o Markdown (Marp ou comum).
-- Encontrar referencias de imagem em Markdown:
+- Read the Markdown (Marp or common).
+- Find image references in Markdown:
   - `![alt](path)`
   - `![](path)`
-- Encontrar imagens em HTML inline:
+- Find images in inline HTML:
   - `<img src="path" ...>`
-- Converter apenas caminhos locais (relativos ou absolutos) para `data:` URI base-64.
-- Ignorar URLs remotas (`http://`, `https://`) sem alterar.
-- Preservar `alt` e atributos do `img` (exceto `src`).
-- Suportar ao menos:
+- Convert only local paths (relative or absolute) to `data:` URI base-64.
+- Ignore remote URLs (`http://`, `https://`) without changing.
+- Preserve `alt` and `img` attributes (except `src`).
+- Support at least:
   - `.png` -> `data:image/png;base64,...`
   - `.jpg` / `.jpeg` -> `data:image/jpeg;base64,...`
   - `.webp` -> `data:image/webp;base64,...`
-  - `.svg` -> `data:image/svg+xml;base64,...` (base-64 do arquivo inteiro)
-- Resolver caminhos relativos a partir do diretório do arquivo `source.md`.
-- Se `target.md` nao for informado, sobrescrever o `source.md` de forma segura (escrever em arquivo temporario e renomear).
+  - `.svg` -> `data:image/svg+xml;base64,...` (base-64 of whole file)
+- Resolve relative paths from the directory of `source.md`.
+- If `target.md` is not provided, overwrite `source.md` safely (write to temporary file and rename).
 
-## Validacoes e falhas
+## Validations and Failures
 
-- Se um caminho de imagem local nao existir, falhar com erro claro, indicando qual caminho nao foi encontrado.
-- Se o arquivo de imagem for muito grande, o script deve avisar em stderr (sem falhar) com tamanho em bytes.
-  - threshold sugerido: 2 MB por imagem.
-- Nao alterar o arquivo se nenhuma imagem local for encontrada (saida deve ser identica).
+- If a local image path does not exist, fail with clear error, showing which path was not found.
+- If the image file is too large, the script should warn on stderr (without failing) with size in bytes.
+  - suggested threshold: 2 MB per image.
+- Do not change the file if no local image is found (output should be identical).
 
-## Integracao no fluxo
+## Integration in Workflow
 
-Quando a geracao do Markdown Marp final estiver implementada:
+When generation of final Marp Markdown is implemented:
 
-1. Preencher `model.md` + substituir placeholders.
-2. Embutir CSS no bloco `<style>...</style>` (ja existe `{{EMBEDDED_MODEL_CSS}}`).
-3. Executar limpeza de comentarios de instrucao (comando interno `strip-instructions`).
-4. Executar `embed-images` para embutir imagens como base-64.
-5. Exportar via `*marp-export <type> <source> [target]`.
+1. Fill `model.md` and replace placeholders.
+2. Embed CSS in the `<style>...</style>` block (placeholder `{{EMBEDDED_MODEL_CSS}}` already exists).
+3. Run instruction comment cleaning (internal command `strip-instructions`).
+4. Run `embed-images` to embed images as base-64.
+5. Export via `*marp-export <type> <source> [target]`.
 
-## Teste rapido (manual)
+## Quick Test (Manual)
 
-Criar um arquivo de teste em `tmp/` com uma imagem local simples e validar:
+Create a test file in `tmp/` with a simple local image and validate:
 
-- antes: `![x](./caminho/para/imagem.png)`
-- depois: `![x](data:image/png;base64,...)`
+- before: `![x](./path/to/image.png)`
+- after: `![x](data:image/png;base64,...)`
 
-Validar que o Marp renderiza sem `--allow-local-files` e sem acesso a `assets/`.
+Validate that Marp renders without `--allow-local-files` and without access to `assets/`.

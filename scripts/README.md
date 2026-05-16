@@ -1,30 +1,30 @@
 # Scripts
 
-Esta pasta contem utilitarios Node para validar e preparar conversoes Markdown/Marp.
+This folder contains Node utilities to validate and prepare Markdown and Marp conversions.
 
-## Convencoes
+## Conventions
 
-- Use Node ESM com `"type": "module"` no `package.json`.
-- Prefira `.mjs` para scripts executaveis.
-- Use apenas APIs nativas do Node enquanto nao houver necessidade real de dependencia externa.
-- Execute scripts via npm, usando `npm --prefix scripts run <script> -- <args>`.
-- Mantenha validacoes deterministicas nos scripts, nao na LLM.
-- Reuse validacoes de caminho e destino com utilitarios compartilhados (ex.: `validate-target.mjs`) para evitar divergencia entre comandos.
-- Escreva mensagens de erro claras e acione `process.exitCode = 1` ou finalize com codigo diferente de zero.
-- Use `tmp/` para entradas e saidas temporarias de teste.
-- Nao grave artefatos gerados fora de `tmp/`, `output/` ou outro destino explicitamente informado.
+- Use Node ESM with `"type": "module"` in `package.json`.
+- Prefer `.mjs` for executable scripts.
+- Use only native Node APIs while there is no real need for external dependencies.
+- Run scripts via npm, using `npm --prefix scripts run <script> -- <args>`.
+- Keep validations deterministic in scripts, not in the LLM.
+- Reuse path and target validations with shared utilities (example: `validate-target.mjs`) to avoid differences between commands.
+- Write clear error messages and set `process.exitCode = 1` or finish with non-zero code.
+- Use `tmp/` for temporary test inputs and outputs.
+- Do not save generated artifacts outside `tmp/`, `output/` or another explicitly informed destination.
 
-## Instalacao
+## Installation
 
-Antes de usar os comandos, rode:
+Before using the commands, run:
 
 ```bash
 npm --prefix scripts install
 ```
 
-O `postinstall` cria `scripts/.npm-installed`, usado pelo `pre-run` como marcador local de instalacao.
+The `postinstall` creates `scripts/.npm-installed`, used by `pre-run` as a local installation marker.
 
-## Comandos
+## Commands
 
 ```bash
 npm --prefix scripts run pre-run
@@ -37,9 +37,9 @@ npm --prefix scripts run strip-instructions -- <source.md> [target.md]
 
 ## `pre-run`
 
-Verifica se `npm install` ja foi executado dentro de `scripts/`.
+Checks if `npm install` has already been run inside `scripts/`.
 
-Se o marcador `scripts/.npm-installed` nao existir, o comando falha e orienta executar:
+If the marker `scripts/.npm-installed` does not exist, the command fails and instructs to run:
 
 ```bash
 npm --prefix scripts install
@@ -47,28 +47,28 @@ npm --prefix scripts install
 
 ## `to-marp`
 
-Valida argumentos do atalho `*to-marp`, normaliza o modelo e resolve o destino final.
+Validates arguments of the `*to-marp` shortcut, normalizes the model and resolves the final destination.
 
-Este comando ainda nao converte conteudo sozinho. Ele prepara uma saida deterministica para a etapa de conversao editorial feita pelo agente:
+This command does not yet convert content alone. It prepares a deterministic output for the editorial conversion step done by the agent:
 
 ```text
 MODEL=model-01
-MODEL_DIR=/caminho/templates/model-01
-SOURCE=/caminho/origem.md
-TARGET=/caminho/origem-slides.md
+MODEL_DIR=/path/templates/model-01
+SOURCE=/path/source.md
+TARGET=/path/source-slides.md
 ```
 
 ## `generate-slides`
 
-Gera um arquivo Marp final a partir de `model.md` e de um Markdown comum:
+Generates a final Marp file from `model.md` and common Markdown:
 
-- executa o fluxo de validacao do `to-marp`;
-- preenche placeholders para capa, conteudo e fechamento;
-- embute CSS efetivo no bloco `<style>{{EMBEDDED_MODEL_CSS}}</style>`;
-- executa `strip-instructions` automaticamente no arquivo final.
-- executa `embed-images` automaticamente no arquivo final.
+- runs the `to-marp` validation flow;
+- fills placeholders for cover, content and closing;
+- embeds effective CSS in the `<style>{{EMBEDDED_MODEL_CSS}}</style>` block;
+- runs `strip-instructions` automatically on the final file.
+- runs `embed-images` automatically on the final file.
 
-Comando:
+Command:
 
 ```bash
 npm --prefix scripts run generate-slides -- <model> <source> [target]
@@ -76,14 +76,14 @@ npm --prefix scripts run generate-slides -- <model> <source> [target]
 
 ## `embed-images`
 
-Converte imagens locais em `data:` URI base-64 em um arquivo Markdown:
+Converts local images to `data:` URI base-64 in a Markdown file:
 
-- converte `![alt](path)` e `<img src="path" ...>`;
-- ignora referencias `http://`, `https://` e `data:`;
-- suporta `.png`, `.jpg`, `.jpeg`, `.webp` e `.svg`;
-- se `target` nao for informado, sobrescreve o source com escrita segura.
+- converts `![alt](path)` and `<img src="path" ...>`;
+- ignores `http://`, `https://` and `data:` references;
+- supports `.png`, `.jpg`, `.jpeg`, `.webp` and `.svg`;
+- if `target` is not provided, overwrites the source with safe writing.
 
-Comando:
+Command:
 
 ```bash
 npm --prefix scripts run embed-images -- <source.md> [target.md]
@@ -91,19 +91,19 @@ npm --prefix scripts run embed-images -- <source.md> [target.md]
 
 ## `marp-export`
 
-Exporta um Markdown Marp final para artefatos via Marp CLI:
+Exports a final Marp Markdown to artifacts via Marp CLI:
 
-- tipos suportados: `pdf`, `html`, `png`, `pptx`;
-- valida autossuficiencia minima do `.md` (bloco `<style>`, sem placeholders e sem imagem local nao embutida);
-- resolve destino com as mesmas convencoes de path do fluxo `to-marp`, sem sufixo extra.
+- supported types: `pdf`, `html`, `png`, `pptx`;
+- validates minimum self-sufficiency of the `.md` (style block, no placeholders and no unembedded local image);
+- resolves destination with the same path conventions as the `to-marp` flow, without extra suffix.
 
-Regras de destino:
+Destination rules:
 
-- sem `[target]`: gera no mesmo diretorio de `<source>` com extensao do tipo (`.pdf`, `.html`, `.png`, `.pptx`);
-- `[target]` como diretorio existente ou terminado em `/`: gera dentro desse diretorio com mesmo nome base de `<source>`;
-- `[target]` como arquivo: usa exatamente esse caminho e valida extensao compativel com o `<type>`.
+- without `[target]`: generates in the same directory as `<source>` with the type extension (`.pdf`, `.html`, `.png`, `.pptx`);
+- `[target]` as existing directory or ending with `/`: generates inside that directory with same base name as `<source>`;
+- `[target]` as file: uses exactly that path and validates extension compatible with the `<type>`.
 
-Comando:
+Command:
 
 ```bash
 npm --prefix scripts run marp-export -- <type> <source.md> [target]
@@ -111,7 +111,7 @@ npm --prefix scripts run marp-export -- <type> <source.md> [target]
 
 ## `strip-instructions`
 
-Remove comentarios HTML de instrucao de um Markdown Marp preenchido, preservando diretivas Marp de classe, como:
+Removes instruction HTML comments from a filled Marp Markdown, preserving Marp class directives, such as:
 
 ```markdown
 <!-- _class: cover -->
