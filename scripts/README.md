@@ -34,6 +34,7 @@ npm --prefix scripts run embed-images -- <source.md> [target.md]
 npm --prefix scripts run marp-export -- <type> <source.md> [target]
 npm --prefix scripts run strip-instructions -- <source.md> [target.md]
 npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
+npm --prefix scripts run test:apply-patch
 ```
 
 ## `pre-run`
@@ -143,3 +144,12 @@ Implemented scope for v1:
 - do not execute shell commands declared in the protocol, only report them.
 
 The reference documentation for the protocol is in `docs/mtg-patch-protocol.md`.
+
+## `test:apply-patch`
+
+Runs a non-destructive automated test suite for the `apply-patch` executor:
+
+- uses fixtures only in `tmp/apply-patch-tests/`;
+- runs protocol executions only with `--dry-run`;
+- validates expected success and failure scenarios;
+- fails with non-zero code when any test assertion fails.

@@ -12,7 +12,8 @@
     "embed-images": "node ./embed-images.mjs",
     "marp-export": "node ./export.mjs",
     "strip-instructions": "node ./strip-instruction-comments.mjs",
-    "apply-patch": "node ./apply-patch-protocol.mjs"
+    "apply-patch": "node ./apply-patch-protocol.mjs",
+    "test:apply-patch": "node ./test-apply-patch.mjs"
   },
   "engines": {
     "node": ">=22"
