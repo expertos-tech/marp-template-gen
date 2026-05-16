@@ -8,39 +8,65 @@ The MTG Patch Protocol defines a reviewable textual format to describe local cha
 
 1. User or agent generates a Markdown protocol file.
 2. The file is reviewed locally before execution.
-3. The local agent calls the planned command:
+3. The local agent calls:
    `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`.
 4. The executor validates security, Git state and operations.
 5. The executor simulates or applies changes.
 6. The executor generates a textual report ready to paste in the chat.
 
-## 3. General format of a protocol file
+## 3. Minimal accepted format for v1
 
-A protocol file must contain:
+v1 parser is block-based. The executor reads:
 
-- minimal execution metadata;
-- ordered list of operations;
-- file targets and change content;
-- optional sections for recommended validation.
+- `[CHANGE-FILE: relative/path.md]` to open a file block;
+- `<cmd:...> ... </cmd:...>` operations inside the current file block;
+- `[VALIDATE]` to collect textual validation commands (listed in report, never executed).
 
-Recommended format:
+Accepted commands in a file block:
 
 ```md
-# MTG Patch Protocol
+[CHANGE-FILE: path/relative.md]
 
-version: 1
-target_repo: owner/repo
+<cmd:insert-before>
+anchor: exact text
+content:|
+new block
+</cmd:insert-before>
 
-## operations
+<cmd:insert-after>
+anchor: exact text
+content:|
+new block
+</cmd:insert-after>
 
-- op: insert-after
-  file: path/target.md
-  match: "anchor text"
-  content: |
-    new block
+<cmd:insert-after-line>
+line: 10
+content:|
+new block
+</cmd:insert-after-line>
+
+<cmd:append-file>
+content:|
+new block
+</cmd:append-file>
+
+<cmd:create-file>
+content:|
+new block
+</cmd:create-file>
+
+[VALIDATE]
+npm --prefix scripts run pre-run
 ```
 
-## 4. Planned v1 operations
+Parse rules:
+
+- each `[CHANGE-FILE: ...]` opens a file block;
+- following commands belong to current file block until a new `[CHANGE-FILE: ...]`, `[VALIDATE]`, or end of file;
+- `content:|` preserves line breaks exactly as written;
+- malformed command blocks fail with explicit line reference.
+
+## 4. Supported v1 operations
 
 - `insert-before`
 - `insert-after`
@@ -58,11 +84,13 @@ target_repo: owner/repo
 
 ## 6. Clean Git rule
 
-On execution with saving, the default behavior requires a clean working tree. If there are local changes, the execution must fail with clear guidance.
+On execution with saving, the default behavior requires a clean working tree, including untracked files. If there are local changes, the execution must fail with clear guidance.
 
 ## 7. Temporary branch rule
 
-Every execution with saving must create a temporary branch before applying changes. The name can follow the protocol's technical prefix and include a unique identifier.
+Every execution with saving must create a temporary branch before applying changes, using format:
+
+`tmp/mtg-patch/YYYYMMDD-HHMMSS`
 
 ## 8. `--dry-run` rule
 
@@ -86,7 +114,20 @@ Every execution with saving must create a temporary branch before applying chang
 
 In v1, the executor must not execute shell commands contained in the protocol. These commands can only be listed in the report as recommended validation.
 
-## 11. Expected report format
+## 11. Operational decisions for v1
+
+- Text anchor with zero occurrences fails.
+- Text anchor with multiple occurrences fails.
+- `insert-after-line` uses 1-based numbering.
+- `insert-after-line` fails if line is less than 1 or greater than total lines in file.
+- `append-file` creates file when target does not exist.
+- `create-file` fails if target already exists.
+- Execution is all-or-nothing for operation failures. If any operation fails, no file is saved.
+- `--force` ignores only clean working tree validation.
+- `--force` does not ignore merge, rebase, cherry-pick, revert, conflicts, invalid protocol, or unsafe path.
+- Execution with saving creates temporary branch before writing.
+
+## 12. Expected report format
 
 The textual report must include at least:
 
@@ -95,17 +136,18 @@ The textual report must include at least:
 - validation summary;
 - list of processed operations;
 - list of affected files;
+- list of found validation commands from `[VALIDATE]`, without execution;
 - errors and blocks, when they exist;
 - recommended next steps.
 
-## 12. v1 limitations
+## 13. v1 limitations
 
 - Does not execute shell embedded in the protocol.
 - Does not implement semantic merge strategies.
 - Does not resolve conflicts automatically.
 - Does not apply operations outside the supported v1 list.
 
-## 13. Simple protocol example
+## 14. Simple protocol example
 
 ```md
 # MTG Patch Protocol
@@ -113,22 +155,25 @@ The textual report must include at least:
 version: 1
 target_repo: expertos-tech/marp-template-gen
 
-## operations
+[CHANGE-FILE: docs/example.md]
 
-- op: create-file
-  file: docs/example.md
-  content: |
-    # Example
-    Initial content.
+<cmd:create-file>
+content:|
+# Example
+Initial content.
+</cmd:create-file>
 
-- op: append-file
-  file: docs/example.md
-  content: |
-    Additional line.
+<cmd:append-file>
+content:|
+Additional line.
+</cmd:append-file>
+
+[VALIDATE]
+npm --prefix scripts run pre-run
 ```
 
 ## Chat command and planned npm command
 
 - Chat name: `*apply-patch <file.md> [--dry-run] [--force]`
-- Planned npm command: `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`
-- Executor implementation: later step (`scripts/apply-patch-protocol.mjs`)
+- npm command: `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`
+- Executor implementation: `scripts/apply-patch-protocol.mjs`

@@ -11,7 +11,8 @@
     "generate-slides": "node ./generate-slides.mjs",
     "embed-images": "node ./embed-images.mjs",
     "marp-export": "node ./export.mjs",
-    "strip-instructions": "node ./strip-instruction-comments.mjs"
+    "strip-instructions": "node ./strip-instruction-comments.mjs",
+    "apply-patch": "node ./apply-patch-protocol.mjs"
   },
   "engines": {
     "node": ">=22"

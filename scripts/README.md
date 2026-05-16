@@ -118,24 +118,28 @@ Removes instruction HTML comments from a filled Marp Markdown, preserving Marp c
 <!-- _class: cover -->
 ```
 
-## `apply-patch` (planned)
+## `apply-patch`
 
-Planned command to execute the MTG Patch Protocol with deterministic validations of security and Git state:
+Executes the MTG Patch Protocol v1 with deterministic validations of security and Git state:
 
 ```bash
 npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
 ```
 
-Planned scope for v1:
+Implemented scope for v1:
 
-- read textual protocol in Markdown;
+- parse protocol blocks `[CHANGE-FILE: ...]` with `<cmd:...>`;
+- support only `insert-before`, `insert-after`, `insert-after-line`, `append-file` and `create-file`;
 - validate paths and block writing outside the repository root;
-- require a clean working tree by default for execution with saving;
-- create a temporary branch on execution with saving;
+- fail when text anchors have zero or multiple matches;
+- use 1-based line numbers for `insert-after-line` and fail out of range;
+- create file on `append-file` when target does not exist;
+- fail on `create-file` when target already exists;
+- apply all operations in memory first (all-or-nothing for operation failures);
+- require a clean working tree by default for execution with saving, including untracked files;
+- create temporary branch `tmp/mtg-patch/YYYYMMDD-HHMMSS` on execution with saving;
 - simulate without saving when `--dry-run` is provided;
 - accept `--force` only to ignore the clean working tree validation;
 - do not execute shell commands declared in the protocol, only report them.
-
-The implementation of the executor will be done in a later step, in the planned file `scripts/apply-patch-protocol.mjs`.
 
 The reference documentation for the protocol is in `docs/mtg-patch-protocol.md`.

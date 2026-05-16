@@ -714,7 +714,7 @@ Internal command to execute the MTG Patch Protocol from a reviewable Markdown fi
 * The v1 executor does not execute shell commands contained in the protocol, it only lists them as recommended validation.
 * The executor must validate paths to block absolute paths, `..` and writing outside the repository root.
 * The executor must generate a textual report ready to paste into the chat.
-* The implementation of the executor will be done in a later step.
+* v1 executor implementation file: `scripts/apply-patch-protocol.mjs`.
 
 ##### Parameters
 
