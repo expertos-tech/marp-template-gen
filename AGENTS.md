@@ -208,10 +208,9 @@ Additional useful commands with `gh`:
 <!-- START COMMUNICATION-RULES -->
 ## 7. Communication Rules
 
-* **Chat interactions:** Reply in English with B2-level vocabulary and grammar. Prefer simple, clear language.
-* **Code and documentation:** The standard for this project is English, including documentation, instructions and template comments.
-* **Technical writing:** Prefer direct, concrete and reviewable language.
-* **Progress updates:** For multi-step work, briefly say what changed, how it was validated and what remains.
+* **Chat Interactions:** Always respond in the same language used by the user in the CLI/chat.
+* **Code and Documentation:** All code and official documentation MUST be in English.
+* **Language Proficiency:** Use technical clarity with a B2-level vocabulary and grammar.
 <!-- END COMMUNICATION-RULES -->
 
 ---

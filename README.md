@@ -14,22 +14,22 @@ This project uses a `*` prefix before short commands as a standard for instructi
 Transform common text into a Marp presentation (Model 01) in the temporary folder for review:
 
 ```bash
-*to-marp 01 sample-data/apresentacao-exemplo.md ./tmp/
+*to-marp 01 sample-data/example-presentation.md ./tmp/
 ```
-*The generated file will be `tmp/apresentacao-exemplo-slides.md`.*
+*The generated file will be `tmp/example-presentation-slides.md`.*
 
 #### 2. Export the Presentation
 Generate final files from the validated Marp Markdown:
 
 ```bash
 # Generate PDF
-*marp-export pdf tmp/apresentacao-exemplo-slides.md
+*marp-export pdf tmp/example-presentation-slides.md
 
 # Generate HTML
-*marp-export html tmp/apresentacao-exemplo-slides.md
+*marp-export html tmp/example-presentation-slides.md
 
 # Generate PowerPoint
-*marp-export pptx tmp/apresentacao-exemplo-slides.md
+*marp-export pptx tmp/example-presentation-slides.md
 ```
 
 ## Project Structure
@@ -38,7 +38,7 @@ Generate final files from the validated Marp Markdown:
 .
 ├── README.md
 ├── sample-data/
-│   └── apresentacao-exemplo.md
+│   └── example-presentation.md
 ├── scripts/
 │   ├── README.md
 │   └── package.json
