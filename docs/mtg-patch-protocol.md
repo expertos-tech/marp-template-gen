@@ -1,29 +1,29 @@
 # MTG Patch Protocol
 
-## 1. Objetivo do protocolo
+## 1. Protocol Objective
 
-O MTG Patch Protocol define um formato textual revisavel para descrever mudancas locais no repositorio. O foco e permitir que instrucoes geradas no ChatGPT Web sejam salvas em Markdown, revisadas por humano, simuladas e aplicadas localmente por um script Node dedicado.
+The MTG Patch Protocol defines a reviewable textual format to describe local changes to the repository. The focus is to allow instructions generated in ChatGPT Web to be saved in Markdown, reviewed by a human, simulated and applied locally by a dedicated Node script.
 
-## 2. Fluxo ChatGPT Web -> agente local -> script Node -> relatorio
+## 2. Flow ChatGPT Web -> local agent -> Node script -> report
 
-1. Usuario ou agente gera um arquivo de protocolo em Markdown.
-2. O arquivo e revisado localmente antes da execucao.
-3. O agente local chama o comando planejado:
-   `npm --prefix scripts run apply-patch -- <arquivo.md> [--dry-run] [--force]`.
-4. O executor valida seguranca, estado Git e operacoes.
-5. O executor simula ou aplica mudancas.
-6. O executor gera um relatorio textual pronto para colar no chat.
+1. User or agent generates a Markdown protocol file.
+2. The file is reviewed locally before execution.
+3. The local agent calls the planned command:
+   `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`.
+4. The executor validates security, Git state and operations.
+5. The executor simulates or applies changes.
+6. The executor generates a textual report ready to paste in the chat.
 
-## 3. Formato geral de um arquivo de protocolo
+## 3. General format of a protocol file
 
-Um arquivo de protocolo deve conter:
+A protocol file must contain:
 
-- metadados minimos da execucao;
-- lista ordenada de operacoes;
-- alvos de arquivo e conteudo da mudanca;
-- secoes opcionais de validacao recomendada.
+- minimal execution metadata;
+- ordered list of operations;
+- file targets and change content;
+- optional sections for recommended validation.
 
-Formato recomendado:
+Recommended format:
 
 ```md
 # MTG Patch Protocol
@@ -34,13 +34,13 @@ target_repo: owner/repo
 ## operations
 
 - op: insert-after
-  file: path/alvo.md
-  match: "texto ancora"
+  file: path/target.md
+  match: "anchor text"
   content: |
-    novo bloco
+    new block
 ```
 
-## 4. Operacoes planejadas da v1
+## 4. Planned v1 operations
 
 - `insert-before`
 - `insert-after`
@@ -48,64 +48,64 @@ target_repo: owner/repo
 - `append-file`
 - `create-file`
 
-## 5. Regras de seguranca
+## 5. Security rules
 
-- Bloquear caminho absoluto.
-- Bloquear uso de `..` no caminho.
-- Bloquear escrita fora da raiz do repositorio.
-- Bloquear protocolo invalido.
-- Bloquear aplicacao quando houver estado Git inseguro que nao seja coberto por `--force`.
+- Block absolute path.
+- Block use of `..` in the path.
+- Block writing outside the repository root.
+- Block invalid protocol.
+- Block application when there is an unsafe Git state that is not covered by `--force`.
 
-## 6. Regra de Git limpo
+## 6. Clean Git rule
 
-Na execucao com gravacao, o comportamento padrao exige working tree limpa. Se houver mudancas locais, a execucao deve falhar com orientacao objetiva.
+On execution with saving, the default behavior requires a clean working tree. If there are local changes, the execution must fail with clear guidance.
 
-## 7. Regra de branch temporaria
+## 7. Temporary branch rule
 
-Toda execucao com gravacao deve criar branch temporaria antes de aplicar mudancas. O nome pode seguir prefixo tecnico do protocolo e incluir identificador unico.
+Every execution with saving must create a temporary branch before applying changes. The name can follow the protocol's technical prefix and include a unique identifier.
 
-## 8. Regra de `--dry-run`
+## 8. `--dry-run` rule
 
-`--dry-run` valida entrada, resolve alvos e simula operacoes sem gravar arquivos e sem criar branch temporaria.
+`--dry-run` validates input, resolves targets and simulates operations without saving files and without creating a temporary branch.
 
-## 9. Regra de `--force`
+## 9. `--force` rule
 
-`--force` ignora somente a validacao de working tree limpa.
+`--force` only ignores the clean working tree validation.
 
-`--force` nao ignora:
+`--force` does not ignore:
 
-- merge em andamento;
-- rebase em andamento;
-- cherry-pick em andamento;
-- revert em andamento;
-- conflitos;
-- protocolo invalido;
-- caminho inseguro.
+- merge in progress;
+- rebase in progress;
+- cherry-pick in progress;
+- revert in progress;
+- conflicts;
+- invalid protocol;
+- unsafe path.
 
-## 10. Regra de nao executar comandos shell do protocolo
+## 10. Rule of not executing protocol shell commands
 
-Na v1, o executor nao deve executar comandos shell contidos no protocolo. Esses comandos podem ser apenas listados no relatorio como validacao recomendada.
+In v1, the executor must not execute shell commands contained in the protocol. These commands can only be listed in the report as recommended validation.
 
-## 11. Formato esperado do relatorio
+## 11. Expected report format
 
-O relatorio textual deve incluir no minimo:
+The textual report must include at least:
 
-- arquivo de protocolo usado;
-- modo de execucao (`dry-run` ou `apply`);
-- resumo de validacoes;
-- lista de operacoes processadas;
-- lista de arquivos afetados;
-- erros e bloqueios, quando existirem;
-- proximos passos recomendados.
+- protocol file used;
+- execution mode (`dry-run` or `apply`);
+- validation summary;
+- list of processed operations;
+- list of affected files;
+- errors and blocks, when they exist;
+- recommended next steps.
 
-## 12. Limitacoes da v1
+## 12. v1 limitations
 
-- Nao executa shell embutido no protocolo.
-- Nao implementa estrategias de merge semantico.
-- Nao resolve conflitos automaticamente.
-- Nao aplica operacoes fora da lista suportada da v1.
+- Does not execute shell embedded in the protocol.
+- Does not implement semantic merge strategies.
+- Does not resolve conflicts automatically.
+- Does not apply operations outside the supported v1 list.
 
-## 13. Exemplo simples de protocolo
+## 13. Simple protocol example
 
 ```md
 # MTG Patch Protocol
@@ -116,19 +116,19 @@ target_repo: expertos-tech/marp-template-gen
 ## operations
 
 - op: create-file
-  file: docs/exemplo.md
+  file: docs/example.md
   content: |
-    # Exemplo
-    Conteudo inicial.
+    # Example
+    Initial content.
 
 - op: append-file
-  file: docs/exemplo.md
+  file: docs/example.md
   content: |
-    Linha adicional.
+    Additional line.
 ```
 
-## Comando no chat e comando npm planejado
+## Chat command and planned npm command
 
-- Nome no chat: `*apply-patch <arquivo.md> [--dry-run] [--force]`
-- Comando npm planejado: `npm --prefix scripts run apply-patch -- <arquivo.md> [--dry-run] [--force]`
-- Implementacao do executor: etapa posterior (`scripts/apply-patch-protocol.mjs`)
+- Chat name: `*apply-patch <file.md> [--dry-run] [--force]`
+- Planned npm command: `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`
+- Executor implementation: later step (`scripts/apply-patch-protocol.mjs`)
