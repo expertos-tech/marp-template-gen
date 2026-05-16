@@ -35,6 +35,7 @@ npm --prefix scripts run marp-export -- <type> <source.md> [target]
 npm --prefix scripts run strip-instructions -- <source.md> [target.md]
 npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
 npm --prefix scripts run test:apply-patch
+npm --prefix scripts run validate
 ```
 
 ## `pre-run`
@@ -153,3 +154,11 @@ Runs a non-destructive automated test suite for the `apply-patch` executor:
 - runs protocol executions only with `--dry-run`;
 - validates expected success and failure scenarios;
 - fails with non-zero code when any test assertion fails.
+
+## `validate`
+
+Runs the quick validation chain for scripts in this order:
+
+1. `npm run pre-run`
+2. `npm run apply-patch -- --help`
+3. `npm run test:apply-patch`
