@@ -1,38 +1,38 @@
 # Marp Template Gen
 
-Este projeto organiza modelos reutilizaveis para gerar apresentacoes com Marp a partir de conteudo Markdown.
+This project organizes reusable models to generate presentations with Marp from Markdown content.
 
-O objetivo e manter um fluxo claro para transformar texto estruturado em uma apresentacao com identidade visual consistente, usando templates versionados, instrucoes de preenchimento e comandos Node para renderizacao/exportacao.
+The goal is to maintain a clear workflow to transform structured text into a presentation with consistent visual identity, using versioned templates, filling instructions and Node commands for rendering and export.
 
-Os templates podem ser modulares, mas os arquivos Markdown Marp gerados devem ser autossuficientes: o `.md` final deve conter internamente os estilos e assets essenciais para renderizacao basica.
+Templates can be modular, but generated Marp Markdown files must be self-contained: the final `.md` must include internally the styles and essential assets for basic rendering.
 
-## Início rápido
+## Quick Start
 
-Este projeto utiliza um prefixo `*` antes de comandos curtos como padrão de instruções (ex: `*to-marp`), acionáveis diretamente no chat e compatíveis com a maioria dos agentes. Esses atalhos automatizam tarefas complexas, validam caminhos e garantem que as apresentações sigam os padrões de qualidade do repositório.
+This project uses a `*` prefix before short commands as a standard for instructions (for example: `*to-marp`), which can be used directly in the chat and work with most agents. These shortcuts automate complex tasks, validate paths and ensure that presentations follow the repository's quality standards.
 
-#### 1. Converter Markdown para Slides
-Transforme um texto comum em uma apresentação Marp (Modelo 01) na pasta temporária para revisão:
+#### 1. Convert Markdown to Slides
+Transform common text into a Marp presentation (Model 01) in the temporary folder for review:
 
 ```bash
 *to-marp 01 sample-data/apresentacao-exemplo.md ./tmp/
 ```
-*O arquivo gerado será `tmp/apresentacao-exemplo-slides.md`.*
+*The generated file will be `tmp/apresentacao-exemplo-slides.md`.*
 
-#### 2. Exportar a apresentação
-Gere os arquivos finais a partir do Markdown Marp validado:
+#### 2. Export the Presentation
+Generate final files from the validated Marp Markdown:
 
 ```bash
-# Gerar PDF
+# Generate PDF
 *marp-export pdf tmp/apresentacao-exemplo-slides.md
 
-# Gerar HTML
+# Generate HTML
 *marp-export html tmp/apresentacao-exemplo-slides.md
 
-# Gerar PowerPoint
+# Generate PowerPoint
 *marp-export pptx tmp/apresentacao-exemplo-slides.md
 ```
 
-## Estrutura do projeto
+## Project Structure
 
 ```text
 .
@@ -52,54 +52,54 @@ Gere os arquivos finais a partir do Markdown Marp validado:
 └── .gitignore
 ```
 
-## Pasta `sample-data/`
+## Folder `sample-data/`
 
-`sample-data/` guarda exemplos versionados de Markdown comum para teste de conversao.
+`sample-data/` stores versioned examples of common Markdown for conversion testing.
 
-Diferenca de uso:
+Usage difference:
 
-- `sample-data/`: exemplos permanentes e reutilizaveis.
-- `tmp/`: arquivos temporarios e descartaveis de validacao local.
+- `sample-data/`: permanent and reusable examples.
+- `tmp/`: temporary and disposable files for local validation.
 
-## Pasta `templates/`
+## Folder `templates/`
 
-A pasta `templates/` contem a documentacao geral dos modelos e o indice dos templates disponiveis.
+The `templates/` folder contains general documentation of the models and the index of available templates.
 
-Leia [`templates/README.md`](./templates/README.md) para detalhes sobre:
+Read [`templates/README.md`](./templates/README.md) for details about:
 
-- fluxo de conversao;
-- convencoes dos modelos;
-- comandos Node esperados;
-- validacao interativa por ondas;
-- indice dos modelos disponiveis.
+- conversion workflow;
+- model conventions;
+- expected Node commands;
+- interactive validation by waves;
+- index of available models.
 
-## Modelo `model-01`
+## Model `model-01`
 
-O primeiro modelo do projeto sera `templates/model-01/`.
+The first project model will be `templates/model-01/`.
 
-Ele sera composto por:
+It will consist of:
 
-- `model.md`: template Marp com placeholders genericos `{{...}}`;
-- `instructions.md`: contrato de uso, tipos de slides e regras de conversao;
-- `theme.css`: tema visual Marp;
-- `assets/`: imagens e fundos usados pelo tema.
+- `model.md`: Marp template with generic placeholders `{{...}}`;
+- `instructions.md`: usage contract, slide types and conversion rules;
+- `theme.css`: Marp visual theme;
+- `assets/`: images and backgrounds used by the theme.
 
-O arquivo [`templates/model-01/instructions.md`](./templates/model-01/instructions.md) define os tipos de slides planejados, como `cover`, `section-cover`, `content`, `cards`, `timeline`, `quote` e `closing`.
+The file [`templates/model-01/instructions.md`](./templates/model-01/instructions.md) defines the planned slide types, such as `cover`, `section-cover`, `content`, `cards`, `timeline`, `quote` and `closing`.
 
-## Ferramentas
+## Tools
 
-As geracoes, previews e exportacoes devem usar ferramentas Node, instaladas no projeto ou executadas via `npx`.
+Generations, previews and exports should use Node tools, installed in the project or run via `npx`.
 
-O pipeline esperado cobre:
+The expected pipeline covers:
 
-- Markdown comum;
-- Markdown Marp preenchido;
+- Common Markdown;
+- Filled Marp Markdown;
 - PDF;
 - HTML;
-- PNG de preview;
-- PPTX, quando suportado pelas ferramentas Node disponiveis.
+- Preview PNG;
+- PPTX, when supported by available Node tools.
 
-Os utilitarios locais ficam em [`scripts/`](./scripts/README.md) e devem ser executados via npm:
+Local utilities are in [`scripts/`](./scripts/README.md) and should be run via npm:
 
 ```bash
 npm --prefix scripts install

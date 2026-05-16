@@ -1,179 +1,179 @@
-# Instrucoes do `model-01`
+# Instructions for `model-01`
 
-`model-01` e um modelo Marp generico para converter conteudo Markdown comum em apresentacoes editoriais 16:9. O visual deve ser inspirado na apresentacao de referencia sobre trabalho informal no Brasil: fundo escuro/azul, tipografia forte, secoes limpas, cards e composicoes com bastante respiro.
+`model-01` is a generic Marp model to convert common Markdown content into 16:9 editorial presentations. The visual design should be inspired by a reference presentation about informal work in Brazil: dark or blue background, strong typography, clean sections, cards and compositions with plenty of space.
 
-## Arquivos do modelo
+## Model Files
 
-| Arquivo | Funcao |
+| File | Function |
 | --- | --- |
-| `model.md` | Template Marp com placeholders `{{...}}` e comentarios HTML de orientacao. |
-| `theme.css` | Tema Marp oficial com `/* @theme model-01 */`. |
-| `assets/` | Imagens e fundos usados pelo tema e pelos slides. |
-| `instructions.md` | Este contrato de uso e conversao. |
+| `model.md` | Marp template with `{{...}}` placeholders and HTML guidance comments. |
+| `theme.css` | Official Marp theme with `/* @theme model-01 */`. |
+| `assets/` | Images and backgrounds used by the theme and slides. |
+| `instructions.md` | This usage and conversion contract. |
 
-Nao crie `README.md` dentro de `model-01`. O indice geral fica em `../README.md`.
+Do not create `README.md` inside `model-01`. The general index is in `../README.md`.
 
-O template pode ser modular, mas o arquivo Markdown Marp gerado deve ser autossuficiente. Ao gerar uma apresentacao final, incorpore no proprio `.md` os estilos necessarios derivados de `theme.css`. Se houver imagem essencial, incorpore como data URI ou substitua por uma composicao CSS equivalente.
+The template can be modular, but the generated Marp Markdown file must be self-contained. When generating a final presentation, include in the `.md` itself the necessary styles from `theme.css`. If there is an essential image, include it as a data URI or replace it with an equivalent CSS composition.
 
-## Principios de conversao
+## Conversion Principles
 
-- Preserve a ordem argumentativa do conteudo original.
-- Transforme Markdown comum em slides curtos, com uma ideia principal por slide.
-- Use `cover` para abertura, `section-cover` para mudancas de bloco, `content` para explicacao, `cards` para categorias, `timeline` para sequencias historicas, `quote` para tese critica e `closing` para conclusao.
-- Se um slide tiver texto demais, divida em mais de um slide `content`.
-- Remova placeholders nao usados antes da renderizacao final.
-- Nao deixe comentarios de instrucao no arquivo final preenchido, exceto se o arquivo ainda for um template.
-- Use `npm --prefix scripts run strip-instructions -- <arquivo.md>` para remover comentarios de instrucao depois do preenchimento.
-- Nao inclua marcas de ferramenta externa, como "Feito com Gamma".
-- O arquivo final preenchido nao deve depender obrigatoriamente de `theme.css`, `assets/` ou `--allow-local-files` para renderizacao basica.
+- Preserve the logical order of the original content.
+- Transform common Markdown into short slides, with one main idea per slide.
+- Use `cover` for opening, `section-cover` for block changes, `content` for explanation, `cards` for categories, `timeline` for historical sequences, `quote` for critical thesis and `closing` for conclusion.
+- If a slide has too much text, divide it into more than one `content` slide.
+- Remove unused placeholders before final rendering.
+- Do not leave instruction comments in the final filled file, except if the file is still a template.
+- Use `npm --prefix scripts run strip-instructions -- <file.md>` to remove instruction comments after filling.
+- Do not include marks from external tools, such as "Made with Gamma".
+- The final filled file should not necessarily depend on `theme.css`, `assets/` or `--allow-local-files` for basic rendering.
 
-## Tipos de slides
+## Slide Types
 
 ### `embedded-style`
 
-Use para embutir o CSS necessario no arquivo Marp final. Este bloco aparece no inicio de `model.md` e nao representa um slide.
+Use to embed necessary CSS in the final Marp file. This block appears at the beginning of `model.md` and does not represent a slide.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{EMBEDDED_MODEL_CSS}}` | CSS necessario para renderizar o modelo sem depender de `theme.css`. Use o CSS efetivo do modelo, sem cabecalho `@theme` e sem `@import "default"`. |
+| `{{EMBEDDED_MODEL_CSS}}` | CSS necessary to render the model without depending on `theme.css`. Use the effective CSS of the model, without `@theme` header and without `@import "default"`. |
 
 ### `cover`
 
-Use para o primeiro slide ou abertura forte.
+Use for the first slide or strong opening.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{CONTENT_TITLE}}` | Titulo principal da apresentacao. |
-| `{{CONTENT_SUBTITLE}}` | Subtitulo, pergunta-guia ou tese curta. |
-| `{{CONTENT_META}}` | Autoria, turma, evento ou data. Opcional. |
-| `{{COVER_IMAGE}}` | Caminho de imagem de fundo. Opcional quando o tema ja define fundo. |
+| `{{CONTENT_TITLE}}` | Main title of the presentation. |
+| `{{CONTENT_SUBTITLE}}` | Subtitle, guiding question or short thesis. |
+| `{{CONTENT_META}}` | Authorship, class, event or date. Optional. |
+| `{{COVER_IMAGE}}` | Path of background image. Optional when the theme already defines a background. |
 
 ### `section-cover`
 
-Use para separar blocos tematicos.
+Use to separate thematic blocks.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{SECTION_LABEL}}` | Numero, modulo ou marcador curto. Opcional. |
-| `{{SECTION_TITLE}}` | Nome da secao. |
-| `{{SECTION_SUBTITLE}}` | Frase de contexto da secao. Opcional. |
+| `{{SECTION_LABEL}}` | Number, module or short marker. Optional. |
+| `{{SECTION_TITLE}}` | Name of the section. |
+| `{{SECTION_SUBTITLE}}` | Context phrase of the section. Optional. |
 
 ### `content`
 
-Use para explicacao direta com titulo e corpo.
+Use for direct explanation with title and body.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{CONTENT_TITLE}}` | Titulo do slide. |
-| `{{CONTENT_BODY}}` | Paragrafo curto ou lista Markdown. |
-| `{{CONTENT_NOTE}}` | Observacao curta ou destaque final. Opcional. |
+| `{{CONTENT_TITLE}}` | Title of the slide. |
+| `{{CONTENT_BODY}}` | Short paragraph or Markdown list. |
+| `{{CONTENT_NOTE}}` | Short note or final highlight. Optional. |
 
 ### `two-columns`
 
-Use para comparacao, causa/efeito, antes/depois ou problema/resposta.
+Use for comparison, cause and effect, before and after, or problem and response.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{CONTENT_TITLE}}` | Titulo do slide. |
-| `{{LEFT_TITLE}}` | Titulo da coluna esquerda. |
-| `{{LEFT_BODY}}` | Texto ou lista da coluna esquerda. |
-| `{{RIGHT_TITLE}}` | Titulo da coluna direita. |
-| `{{RIGHT_BODY}}` | Texto ou lista da coluna direita. |
+| `{{CONTENT_TITLE}}` | Title of the slide. |
+| `{{LEFT_TITLE}}` | Title of the left column. |
+| `{{LEFT_BODY}}` | Text or list of the left column. |
+| `{{RIGHT_TITLE}}` | Title of the right column. |
+| `{{RIGHT_BODY}}` | Text or list of the right column. |
 
 ### `cards`
 
-Use para 2 a 4 categorias equivalentes.
+Use for 2 to 4 equivalent categories.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{CONTENT_TITLE}}` | Titulo do grupo de cards. Opcional se o layout ja for autoexplicativo. |
-| `{{CARD_1_TITLE}}` a `{{CARD_4_TITLE}}` | Titulo de cada card. |
-| `{{CARD_1_BODY}}` a `{{CARD_4_BODY}}` | Descricao curta de cada card. |
-| `{{CARD_1_ICON}}` a `{{CARD_4_ICON}}` | Nome ou caminho de icone. Opcional. |
+| `{{CONTENT_TITLE}}` | Title of the card group. Optional if the layout is already self-explanatory. |
+| `{{CARD_1_TITLE}}` to `{{CARD_4_TITLE}}` | Title of each card. |
+| `{{CARD_1_BODY}}` to `{{CARD_4_BODY}}` | Short description of each card. |
+| `{{CARD_1_ICON}}` to `{{CARD_4_ICON}}` | Icon name or path. Optional. |
 
 ### `timeline`
 
-Use para sequencias historicas, processos ou etapas.
+Use for historical sequences, processes or stages.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{CONTENT_TITLE}}` | Titulo da linha do tempo. |
-| `{{TIMELINE_1_LABEL}}` a `{{TIMELINE_4_LABEL}}` | Periodo, numero ou marco. |
-| `{{TIMELINE_1_TITLE}}` a `{{TIMELINE_4_TITLE}}` | Titulo do evento. |
-| `{{TIMELINE_1_BODY}}` a `{{TIMELINE_4_BODY}}` | Descricao curta do evento. |
+| `{{CONTENT_TITLE}}` | Title of the timeline. |
+| `{{TIMELINE_1_LABEL}}` to `{{TIMELINE_4_LABEL}}` | Period, number or landmark. |
+| `{{TIMELINE_1_TITLE}}` to `{{TIMELINE_4_TITLE}}` | Title of the event. |
+| `{{TIMELINE_1_BODY}}` to `{{TIMELINE_4_BODY}}` | Short description of the event. |
 
 ### `quote`
 
-Use para uma tese, critica, definicao ou virada argumentativa.
+Use for a thesis, criticism, definition or argumentative turn.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{QUOTE_TEXT}}` | Frase central do slide. |
-| `{{QUOTE_ATTRIBUTION}}` | Fonte, autor ou contexto. Opcional. |
+| `{{QUOTE_TEXT}}` | Central phrase of the slide. |
+| `{{QUOTE_ATTRIBUTION}}` | Source, author or context. Optional. |
 
 ### `image-focus`
 
-Use quando a imagem for o elemento principal.
+Use when the image is the main element.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{CONTENT_TITLE}}` | Titulo curto. Opcional. |
-| `{{IMAGE_SRC}}` | Caminho da imagem. |
-| `{{IMAGE_ALT}}` | Texto alternativo ou descricao. |
-| `{{IMAGE_CAPTION}}` | Legenda curta. Opcional. |
+| `{{CONTENT_TITLE}}` | Short title. Optional. |
+| `{{IMAGE_SRC}}` | Image path. |
+| `{{IMAGE_ALT}}` | Alternative text or description. |
+| `{{IMAGE_CAPTION}}` | Short caption. Optional. |
 
 ### `closing`
 
-Use para encerramento, pergunta final ou chamada de acao.
+Use for closing, final question or call to action.
 
 Placeholders:
 
-| Placeholder | Conteudo esperado |
+| Placeholder | Expected Content |
 | --- | --- |
-| `{{CLOSING_TITLE}}` | Mensagem final. |
-| `{{CLOSING_SUBTITLE}}` | Complemento, pergunta ou proximo passo. Opcional. |
+| `{{CLOSING_TITLE}}` | Final message. |
+| `{{CLOSING_SUBTITLE}}` | Addition, question or next step. Optional. |
 
-## Regras para criar `apresentacao-marp.md`
+## Rules for Creating `presentation-marp.md`
 
-1. Comece pelo Markdown comum de entrada.
-2. Identifique o papel de cada bloco: abertura, secao, explicacao, lista, comparacao, timeline, citacao ou conclusao.
-3. Escolha o tipo de slide correspondente.
-4. Copie o bloco apropriado de `model.md`.
-5. Substitua os placeholders `{{...}}`.
-6. Remova placeholders opcionais vazios.
-7. Incorpore no arquivo final um bloco `<style>...</style>` com o CSS necessario do modelo.
-8. Incorpore assets essenciais como data URI ou substitua por CSS quando possivel.
-9. Execute `npm --prefix scripts run strip-instructions -- <arquivo.md>` no arquivo Marp preenchido.
-10. Renderize com Marp CLI sem depender de `--theme` para o arquivo final.
-11. Valide visualmente antes de exportar para PPTX.
+1. Start with the common Markdown input.
+2. Identify the role of each block: opening, section, explanation, list, comparison, timeline, quote or conclusion.
+3. Choose the corresponding slide type.
+4. Copy the appropriate block from `model.md`.
+5. Replace the `{{...}}` placeholders.
+6. Remove empty optional placeholders.
+7. Include in the final file a `<style>...</style>` block with necessary CSS from the model.
+8. Include essential assets as data URI or replace with CSS when possible.
+9. Run `npm --prefix scripts run strip-instructions -- <file.md>` on the filled Marp file.
+10. Render with Marp CLI without depending on `--theme` for the final file.
+11. Validate visually before exporting to PPTX.
 
-## Checklist de qualidade
+## Quality Checklist
 
-- A apresentacao renderiza em 16:9.
-- Cada slide tem uma ideia principal.
-- Nenhum placeholder `{{...}}` sobrou no arquivo final.
-- Nenhum comentario de instrucao sobrou no arquivo final, salvo em templates.
-- Diretivas Marp de classe, como `<!-- _class: cover -->`, foram preservadas.
-- O CSS necessario esta embutido no arquivo final.
-- O arquivo final renderiza sem depender obrigatoriamente de `theme.css`.
-- O texto cabe no slide sem sobreposicao.
-- Assets essenciais foram incorporados ou substituidos por CSS.
-- PDF, HTML, PNG preview e PPTX sao gerados por ferramentas Node.
+- The presentation renders in 16:9.
+- Each slide has one main idea.
+- No `{{...}}` placeholders remain in the final file.
+- No instruction comments remain in the final file, except in templates.
+- Marp class directives, such as `<!-- _class: cover -->`, were preserved.
+- Necessary CSS is embedded in the final file.
+- The final file renders without necessarily depending on `theme.css`.
+- Text fits on the slide without overlap.
+- Essential assets were included or replaced with CSS.
+- PDF, HTML, PNG preview and PPTX are generated by Node tools.
