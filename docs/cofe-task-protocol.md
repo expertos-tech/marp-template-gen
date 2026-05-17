@@ -81,7 +81,18 @@ Empty or missing required metadata fails fast.
 
 ## 6. RUN allowlist and blocklist
 
-The runner does not execute arbitrary shell. Commands are tokenized by whitespace, the binary plus its first argument(s) are compared against an allowlist of prefixes, and metacharacters are rejected.
+### 6.1 RUN semantics policy
+
+COFE RUN is, by design, an **allowlist-bounded** execution channel. This is the default and only supported semantics in v1.
+
+- **Default (Option A, safe allowlist):** the runner accepts only commands whose prefix appears in the allowlist defined below, with no shell interpolation. This is the recommended semantics for any consumer of COFE, including planned MCP integrations.
+- **Deferred (Option B, general reviewable commands):** running arbitrary, human-reviewed shell commands protected by a temporary branch is intentionally **out of scope for v1**. If introduced in a future version, it must be an explicit opt-in mode (for example `mode: command`, `trust: reviewed`, or `unsafe_run: true`) and never the default. The current runner must reject such modes if encountered.
+
+The rationale is to keep the protocol safe by default for Web UI LLM <> Local CLI Agent bridging, and to make any expansion of execution power a deliberate, named choice rather than a silent capability.
+
+### 6.2 Allowlist and blocklist
+
+Commands are tokenized by whitespace, the binary plus its first argument(s) are compared against an allowlist of prefixes, and metacharacters are rejected.
 
 Allowed prefixes (v1):
 
