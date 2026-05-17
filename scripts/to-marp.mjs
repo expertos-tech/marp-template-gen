@@ -13,20 +13,20 @@ import {
 import { resolveTargetFromSource } from './validate-target.mjs';
 
 function usage() {
-  console.log(`Uso:
+  console.log(`Usage:
   npm --prefix scripts run to-marp -- <model> <source> [target]
 
-Objetivo:
-  Validar os argumentos do atalho *to-marp e resolver o caminho final do
-  Markdown Marp que sera criado. Este script nao converte conteudo.
+Goal:
+  Validate the *to-marp shortcut arguments and resolve the final path of
+  the Marp Markdown that will be created. This script does not convert content.
 
-Parametros:
-  <model>   Numero ou nome do modelo: 01, 1, model-01.
-  <source>  Arquivo Markdown comum de entrada.
-  [target]  Destino opcional: diretorio ou arquivo .md.
+Parameters:
+  <model>   Model number or name: 01, 1, model-01.
+  <source>  Input common Markdown file.
+  [target]  Optional destination: directory or .md file.
 
-Saida:
-  Imprime MODEL_DIR, SOURCE e TARGET resolvidos em formato chave=valor.`);
+Output:
+  Prints MODEL_DIR, SOURCE and TARGET in key=value format.`);
 }
 
 function runPreRun() {
@@ -41,7 +41,7 @@ function runPreRun() {
 
   if (result.status !== 0) {
     const stderr = result.stderr.trim();
-    fail(stderr || 'pre-run falhou.');
+    fail(stderr || 'pre-run failed.');
   }
 }
 
@@ -65,25 +65,25 @@ async function main() {
   const modelDir = path.join(repoRoot, 'templates', model);
 
   if (!(await isDirectory(modelDir))) {
-    fail(`modelo nao encontrado: templates/${model}`);
+    fail(`model not found: templates/${model}`);
   }
 
   const modelFile = path.join(modelDir, 'model.md');
   const instructionsFile = path.join(modelDir, 'instructions.md');
 
   if (!(await isFile(modelFile))) {
-    fail(`modelo sem model.md: templates/${model}/model.md`);
+    fail(`model missing model.md: templates/${model}/model.md`);
   }
 
   if (!(await isFile(instructionsFile))) {
-    fail(`modelo sem instructions.md: templates/${model}/instructions.md`);
+    fail(`model missing instructions.md: templates/${model}/instructions.md`);
   }
 
   ensureMarkdownPath('source', rawSource);
 
   const source = resolveInputPath(rawSource);
   if (!(await isFile(source))) {
-    fail(`source nao existe ou nao e arquivo: ${rawSource}`);
+    fail(`source does not exist or is not a file: ${rawSource}`);
   }
 
   const target = await resolveTargetFromSource({
@@ -93,7 +93,7 @@ async function main() {
     suffix: '-slides',
     failIfExists: true,
   });
-  ensureMarkdownPath('destino resolvido', target);
+  ensureMarkdownPath('resolved target', target);
 
   console.log(`MODEL=${model}`);
   console.log(`MODEL_DIR=${modelDir}`);

@@ -10,18 +10,22 @@ import {
 } from './lib.mjs';
 
 function usage() {
-  console.log(`Uso:
+  console.log(`Usage:
   npm --prefix scripts run strip-instructions -- <source.md> [target.md]
 
-Objetivo:
-  Remover comentarios HTML de instrucao de um arquivo Markdown/Marp gerado.
+Goal:
+  Remove instruction HTML comments from a generated Markdown/Marp file.
 
-Regras:
-  - Remove comentarios HTML de bloco: <!-- ... -->
-  - Preserva diretivas Marp de classe: <!-- _class: ... -->
-  - Remove comentarios HTML de linha unica, exceto diretivas Marp de classe
-  - Se target nao for informado, sobrescreve o source de forma segura
-  - Se target for informado, grava o resultado no arquivo indicado`);
+Rules:
+  - Removes block HTML comments: <!-- ... -->
+  - Preserves Marp class directives: <!-- _class: ... -->
+  - Removes single-line HTML comments, except Marp class directives
+  - If target is not provided, overwrites source safely
+  - If target is provided, writes the result to the indicated file
+
+Limitations:
+  - Inline comments mid-line (text <!-- note --> text) are NOT removed in v1.
+    Place instruction comments on their own line for removal.`);
 }
 
 function stripInstructionComments(content) {
@@ -73,7 +77,7 @@ async function main() {
 
   const source = resolveInputPath(rawSource);
   if (!(await isFile(source))) {
-    fail(`source nao existe ou nao e arquivo: ${rawSource}`);
+    fail(`source does not exist or is not a file: ${rawSource}`);
   }
 
   const target = rawTarget ? resolveInputPath(rawTarget) : source;
@@ -81,7 +85,7 @@ async function main() {
 
   const targetDir = path.dirname(target);
   if (!(await isDirectory(targetDir))) {
-    fail(`diretorio do target nao existe: ${targetDir}`);
+    fail(`target directory does not exist: ${targetDir}`);
   }
 
   const cleaned = stripInstructionComments(await readText(source));
