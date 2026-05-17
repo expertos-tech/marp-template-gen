@@ -82,6 +82,7 @@ The COFE Protocol is designed to be extracted and reused in other projects:
    - Executes `RUN` blocks (safe shell commands).
    - Coordinates `APPLY_PATCH` blocks (if in `write` mode).
 4. **Report:** Runner generates a COFE TASK REPORT ready to paste back into chat.
+   - The report includes a `web_ui_handoff` section with mechanical paste-back guidance and log location.
 
 ### 4.2 Patch Execution Flow
 

@@ -488,6 +488,8 @@ npm --prefix scripts run task -- <file.md>
 * After script execution, the agent should inspect only the script exit status and final report.
 * If the script exits successfully, the agent should summarize the success and show the relevant final report.
 * If the script exits with error, the agent should report the error returned by the script without inventing recovery steps.
+* The `COFE TASK REPORT` is meant to be pasted back to the Web UI as-is. Do not treat it as a semantic instruction to infer unreported actions.
+* `requested_report_items` are copied verbatim from the task file `## REPORT` and are not answers produced by the runner.
 * The agent may ask for user approval only when the script report indicates a pending user decision, destructive action, Git action or ambiguity.
 * If `tmp/prompt.md` does not exist when running without parameters, the command should fail through the script, not through manual agent validation.
 

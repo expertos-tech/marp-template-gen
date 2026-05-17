@@ -35,6 +35,7 @@ npm --prefix scripts run marp-export -- <type> <source.md> [target]
 npm --prefix scripts run strip-instructions -- <source.md> [target.md]
 npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
 npm --prefix scripts run task -- [file.md] [--dry-run] [--explain]
+npm --prefix scripts run check:web-ui-rules-length
 npm --prefix scripts run test:apply-patch
 npm --prefix scripts run test:run-task
 npm --prefix scripts run validate
@@ -178,6 +179,8 @@ Sample tasks and reusable templates are available in:
 - [`docs/examples/`](../docs/examples/) (didactic examples)
 - [`cofe-cmds/`](../cofe-cmds/README.md) (reusable templates ready to run)
 
+The `COFE TASK REPORT` printed to stdout is intended to be pasted back into chat as-is. It includes a `web_ui_handoff` section with mechanical guidance such as log location.
+
 ## `test:apply-patch`
 
 Runs a non-destructive automated test suite for the `apply-patch` executor:
@@ -195,3 +198,4 @@ Runs the quick validation chain for scripts in this order:
 2. `npm run apply-patch -- --help`
 3. `npm run test:apply-patch`
 4. `npm run test:run-task`
+5. `npm run check:web-ui-rules-length`

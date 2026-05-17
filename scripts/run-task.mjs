@@ -47,7 +47,7 @@ Safety:
 const ALLOWED_RUN_PREFIXES = [
   "npm --prefix scripts run pre-run",
   "npm --prefix scripts run validate",
-    "npm --prefix scripts run apply-patch",
+  "npm --prefix scripts run apply-patch",
   "npm --prefix scripts run bootstrap-template-theme",
   "git status --short",
   "git diff --",
@@ -145,6 +145,27 @@ function appendLog(logPath, content) {
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function buildFailureLogRelative(summary) {
+  const now = new Date();
+  const pad2 = (value) => String(value).padStart(2, "0");
+  const stamp =
+    `${now.getUTCFullYear()}` +
+    `${pad2(now.getUTCMonth() + 1)}` +
+    `${pad2(now.getUTCDate())}-` +
+    `${pad2(now.getUTCHours())}` +
+    `${pad2(now.getUTCMinutes())}` +
+    `${pad2(now.getUTCSeconds())}`;
+
+  const base =
+    (summary && (summary.id || summary.taskFile) ? `${summary.id || summary.taskFile}` : "unknown")
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9._-]+/g, "-")
+      .replaceAll(/-+/g, "-")
+      .replaceAll(/^-|-$/g, "") || "unknown";
+
+  return `tmp/cofe-task-failures/${stamp}-${base}.log`;
 }
 
 function parseArgs(argv) {
@@ -605,10 +626,20 @@ function runApplyPatch(entry, allowedChanges, logPath) {
   return {
     command: commandStr,
     exitCode: result.status,
+    branchCreated: extractPatchBranchCreated(result.stdout || ""),
   };
 }
 
+function extractPatchBranchCreated(stdout) {
+  const match = stdout.match(/^branch_created:\s*(.+)\s*$/m);
+  if (!match) return null;
+  const value = match[1].trim();
+  if (!value || value === "n/a") return null;
+  return value;
+}
+
 function buildReport(summary, reportItems, status, errorMessage = null) {
+  const logForDisplay = summary.log || "n/a";
   const lines = [
     "# COFE TASK REPORT",
     "",
@@ -616,7 +647,7 @@ function buildReport(summary, reportItems, status, errorMessage = null) {
     `task_file: ${summary.taskFile}`,
     `id: ${summary.id}`,
     `mode: ${summary.mode}`,
-    `log: ${summary.log}`,
+    `log: ${logForDisplay}`,
     `dry_run: ${summary.dryRun ? "true" : "false"}`,
   ];
 
@@ -644,7 +675,7 @@ function buildReport(summary, reportItems, status, errorMessage = null) {
           (item) =>
             `- ${item.file} dry_run=${item.dryRun ? "true" : "false"} force=${
               item.force ? "true" : "false"
-            } -> exit ${item.exitCode}`,
+            } branch=${item.branchCreated || "n/a"} -> exit ${item.exitCode}`,
         )
       : ["- none"]),
     "",
@@ -657,6 +688,15 @@ function buildReport(summary, reportItems, status, errorMessage = null) {
     ...(reportItems.length
       ? reportItems.map((item) => `- ${item}`)
       : ["- none"]),
+    "",
+    "web_ui_handoff:",
+    "- display_only: true",
+    `- log_file: ${logForDisplay}`,
+    `- runner_stage: ${summary.stage || "unknown"}`,
+    "- paste_report_back_to_web_ui: true",
+    "- requested_report_items_source: copied_from_task_##REPORT",
+    "- requested_report_items_are_not_answers: true",
+    "- do_not_infer_unreported_changes: true",
     "",
     `finished_at: ${nowIso()}`,
   );
@@ -726,6 +766,20 @@ function emitFailure(summary, reportItems, error, logPath) {
     `finished_at: ${nowIso()}`,
   ].join("\n");
 
+  if (!logPath) {
+    try {
+      const fallbackRelative = buildFailureLogRelative(summary);
+      const fallbackResolved = resolveRepoPath(
+        fallbackRelative,
+        "fallback log path",
+      );
+      summary.log = fallbackRelative;
+      logPath = fallbackResolved;
+    } catch {
+      // if even the fallback path fails, continue without logging
+    }
+  }
+
   if (logPath) {
     try {
       appendLog(logPath, failureBlock);
@@ -751,6 +805,7 @@ function main() {
     mode: "",
     log: "",
     dryRun: false,
+    stage: "init",
     filesRead: [],
     runCommands: [],
     applyPatch: [],
@@ -781,8 +836,17 @@ function main() {
 
     validateRequiredTaskShape(raw, metadata, blocks);
 
+    summary.taskFile = taskFileRelative;
+    summary.id = metadata.id;
+    summary.mode = metadata.mode;
+    summary.log = normalizeSlashes(String(metadata.log || "").trim());
+    summary.stage = "parsed";
+
+    reportItems = parseListBlock(blocks.get("REPORT") || "");
+
     const logResolved = resolveRepoPath(metadata.log, "log path");
     const logRelative = normalizeSlashes(path.relative(repoRoot, logResolved));
+    summary.log = logRelative;
     validateLogPath(logRelative);
 
     const allowedChanges = parseListBlock(blocks.get("ALLOWED_CHANGES") || "");
@@ -793,19 +857,13 @@ function main() {
     const applyPatchEntries = parseApplyPatchBlock(
       blocks.get("APPLY_PATCH") || "",
     );
-    reportItems = parseListBlock(blocks.get("REPORT") || "");
 
-    summary = {
-      taskFile: taskFileRelative,
-      id: metadata.id,
-      mode: metadata.mode,
-      log: logRelative,
-      dryRun,
-      filesRead: [],
-      runCommands: [],
-      applyPatch: [],
-      warnings: [],
-    };
+    summary.dryRun = dryRun;
+    summary.filesRead = [];
+    summary.runCommands = [];
+    summary.applyPatch = [];
+    summary.warnings = [];
+    summary.stage = "validated";
 
     if (explain) {
       console.log(
@@ -823,6 +881,10 @@ function main() {
     }
 
     logPath = logResolved;
+
+    if (!dryRun) {
+      summary.stage = "executed";
+    }
 
     const startBlock = [
       "# COFE TASK EXEC LOG",
@@ -957,6 +1019,7 @@ function main() {
         dryRun: entry.dryRun,
         force: entry.force,
         exitCode: result.exitCode,
+        branchCreated: result.branchCreated,
       });
     }
 

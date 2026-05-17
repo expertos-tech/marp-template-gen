@@ -146,7 +146,13 @@ The runner always prints a `COFE TASK REPORT` block to stdout, with:
 - `task_file`, `id`, `mode`, `log`;
 - `files_read`, `run_commands`, `apply_patch`, `warnings`;
 - `requested_report_items` (copied from `## REPORT`);
+- `web_ui_handoff` (mechanical handoff guidance for paste-back);
 - `finished_at` (UTC ISO timestamp).
+
+Notes:
+
+- The report is intended to be pasted back into the chat as-is. It is not a prompt to infer unreported actions.
+- `requested_report_items` are copied verbatim from the task file and are not answers produced by the runner.
 
 ## 11. Flags
 

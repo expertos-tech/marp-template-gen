@@ -115,6 +115,10 @@ async function testValidReadModeSucceeds() {
     result.stdout.includes('status: success'),
     'expected status: success in stdout',
   );
+  assertCondition(
+    result.stdout.includes('web_ui_handoff:'),
+    'expected web_ui_handoff section in task report',
+  );
 }
 
 async function testDryRunSkipsExecution() {
@@ -137,6 +141,10 @@ async function testDryRunSkipsExecution() {
   assertCondition(
     result.stdout.includes('dry_run: true'),
     'expected dry_run: true in report',
+  );
+  assertCondition(
+    result.stdout.includes('web_ui_handoff:'),
+    'expected web_ui_handoff section in dry-run task report',
   );
 }
 
