@@ -1,8 +1,8 @@
-# MTG Task Protocol
+# COFE Task Protocol
 
 ## 1. Protocol Objective
 
-The MTG Task Protocol defines a reviewable Markdown format to describe and execute a constrained set of operations against the repository. The focus is to let an agent (in chat or locally) declare a task as a single Markdown file, validated and executed by a dedicated Node runner with deterministic behavior.
+The COFE Task Protocol defines a reviewable Markdown format to describe and execute a constrained set of operations against the repository. The focus is to let an agent (in chat or locally) declare a task as a single Markdown file, validated and executed by a dedicated Node runner with deterministic behavior.
 
 ## 2. Flow chat -> local agent -> Node runner -> report
 
@@ -12,12 +12,12 @@ The MTG Task Protocol defines a reviewable Markdown format to describe and execu
    `npm --prefix scripts run task -- <file.md>`.
 4. The runner validates structure, security, modes and allowlists.
 5. The runner executes `READ`, `RUN` and `APPLY_PATCH` blocks, logging incrementally.
-6. The runner prints a `MTG TASK REPORT` ready to paste into chat.
+6. The runner prints a `COFE TASK REPORT` ready to paste into chat.
 
 ## 3. File shape
 
 ```md
-# MTG TASK
+# COFE TASK
 
 id: <identifier>
 mode: read | write
@@ -54,14 +54,17 @@ force: false
 
 Parse rules:
 
-- First heading must be `# MTG TASK`.
+- First heading must be `# COFE TASK`.
 - Metadata lines appear before the first `## BLOCK`. Each line uses `key: value`.
 - Blocks are introduced by `## NAME`. Names are case-insensitive but canonical names are uppercase.
 - Duplicate blocks are rejected.
+- `GOAL` and `REPORT` blocks are required.
 - `READ`, `RUN` and `ALLOWED_CHANGES` blocks are bullet lists (`- value`).
-- `APPLY_PATCH` is a list of entries. Each entry starts with `file: <path>` and optionally adds `dry_run: true|false` and `force: true|false` before the next `file:`.
+- `APPLY_PATCH` is a list of entries. Each entry starts with `file: <path>` and optionally adds `dry_run: true|false` plus `force: true|false`, before the next `file:`.
 - Unknown fields inside `APPLY_PATCH` entries cause the task to fail.
 - `REPORT` is a bullet list copied verbatim into the final report.
+
+Compatibility note: `scripts/run-task.mjs` also accepts `dryRun` for legacy files, but new files should use `dry_run`.
 
 ## 4. Required metadata
 
@@ -73,7 +76,7 @@ Empty or missing required metadata fails fast.
 
 ## 5. Mode semantics
 
-- `mode: read`: only `READ` and read-only `RUN` commands are allowed. `APPLY_PATCH` blocks are rejected.
+- `mode: read`: only `READ` and read-only `RUN` commands are allowed. `APPLY_PATCH` entries are rejected.
 - `mode: write`: all supported blocks are allowed within their own rules.
 
 ## 6. RUN allowlist and blocklist
@@ -85,7 +88,6 @@ Allowed prefixes (v1):
 - `npm --prefix scripts run pre-run`
 - `npm --prefix scripts run validate`
 - `npm --prefix scripts run apply-patch`
-- `npm --prefix scripts run task`
 - `git status --short`
 - `git diff --`
 
@@ -93,8 +95,11 @@ Rejected unconditionally:
 
 - any metacharacter from `; | & $ ( ) < > \` `` ` `` `"` `'` `\` newline tab;
 - any form of `rm`, `npm install`, `npm i`, `git commit`, `git push`;
-- any command beginning with `npm --prefix scripts run task` (anti-recursion);
 - arguments containing `..` segments are not rejected by RUN itself, but `APPLY_PATCH` paths reject them.
+
+Special case:
+
+- commands beginning with `npm --prefix scripts run task` are skipped with a warning to avoid recursion.
 
 Commands execute with `shell: false`. There is no shell interpolation.
 
@@ -107,7 +112,7 @@ For each `APPLY_PATCH` entry, the runner:
 3. Extracts every `[CHANGE-FILE: ...]` from the protocol, normalizes the path, and confirms each target also appears in `ALLOWED_CHANGES`.
 4. Builds the command `npm --prefix scripts run apply-patch -- <file> [--dry-run] [--force]` and executes it through the allowlisted channel.
 
-The actual write semantics, branch creation and Git safety are owned by `docs/mtg-patch-protocol.md`.
+The actual write semantics, branch creation and Git safety are owned by `docs/cofe-patch-protocol.md`.
 
 ## 8. ALLOWED_CHANGES
 
@@ -124,7 +129,7 @@ The actual write semantics, branch creation and Git safety are owned by `docs/mt
 
 ## 10. Output
 
-The runner always prints a `MTG TASK REPORT` block to stdout, with:
+The runner always prints a `COFE TASK REPORT` block to stdout, with:
 
 - `status`: `success` or `failed`;
 - `task_file`, `id`, `mode`, `log`;
@@ -159,6 +164,7 @@ See:
 
 - `docs/examples/task-read-only.md`
 - `docs/examples/task-apply-patch.md`
+- Reusable templates: [`cofe-cmds/`](../../cofe-cmds/README.md)
 
 ## Chat command and planned npm command
 

@@ -1,8 +1,8 @@
-# MTG Patch Protocol
+# COFE Patch Protocol
 
 ## 1. Protocol Objective
 
-The MTG Patch Protocol defines a reviewable textual format to describe local changes to the repository. The focus is to allow instructions generated in ChatGPT Web to be saved in Markdown, reviewed by a human, simulated and applied locally by a dedicated Node script.
+The COFE Patch Protocol defines a reviewable textual format to describe local changes to the repository. The focus is to allow instructions generated in ChatGPT Web to be saved in Markdown, reviewed by a human, simulated and applied locally by a dedicated Node script.
 
 ## 2. Flow ChatGPT Web -> local agent -> Node script -> report
 
@@ -214,7 +214,7 @@ On execution with saving, the default behavior requires a clean working tree, in
 
 Every execution with saving must create a temporary branch before applying changes, using format:
 
-`tmp/mtg-patch/YYYYMMDD-HHMMSS`
+`tmp/cofe-patch/YYYYMMDD-HHMMSS`
 
 ## 8. `--dry-run` rule
 
@@ -281,28 +281,10 @@ The textual report must include at least:
 
 ## 14. Simple protocol example
 
-```md
-# MTG Patch Protocol
+See:
 
-version: 1
-target_repo: expertos-tech/marp-template-gen
-
-[CHANGE-FILE: docs/example.md]
-
-<cmd:create-file>
-content:|
-# Example
-Initial content.
-</cmd:create-file>
-
-<cmd:append-file>
-content:|
-Additional line.
-</cmd:append-file>
-
-[VALIDATE]
-npm --prefix scripts run pre-run
-```
+- `docs/examples/` for didactic examples
+- Reusable templates: [`cofe-cmds/`](../../cofe-cmds/README.md)
 
 ## Chat command and planned npm command
 

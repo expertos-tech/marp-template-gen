@@ -54,10 +54,25 @@ Preferred wording:
 Before instructing template, script, export or presentation changes, tell the CLI to read the relevant files:
 
 * `README.md`
+* `docs/cofe-protocol.md` — Overview of the COFE Protocol used for command orchestration and file editing.
 
 If Marp behavior is unclear after local docs, instruct the CLI to consult official Marp documentation.
 
 Project identity: **Marp Template Gen** creates reusable Marp templates and converts standard Markdown into styled presentation files using reviewable Markdown, documented placeholders, reproducible Node exports and interactive validation.
+
+### 2.1 COFE Protocol
+
+The Marp Template Gen project uses the **COFE Protocol** (Command Orchestration and File Editing Protocol) to enable safe, reviewable, deterministic automation between Web UI agents and local CLI environments.
+
+COFE has two layers:
+
+- **Command Orchestration (Task Layer):** Declarative task files (`# COFE TASK`) that orchestrate reads, shell commands, and patch applications. Reference: [COFE Task Protocol](./cofe-task-protocol.md)
+- **File Editing (Patch Layer):** Reviewable patch files describing file changes using anchors and operations. Reference: [COFE Patch Protocol](./cofe-patch-protocol.md)
+
+When instructing the CLI:
+- Tell it to use `npm --prefix scripts run task -- <file.md>` for COFE Task execution.
+- Tell it to use `npm --prefix scripts run apply-patch -- <file.md>` for COFE Patch application.
+- Reference `*run` and `*apply-patch` commands for shortcut execution.
 
 ---
 

@@ -1,4 +1,4 @@
-# MTG TASK
+# COFE TASK
 
 id: example-apply-patch
 mode: write
@@ -6,7 +6,7 @@ log: tmp/example-apply-patch.log
 
 ## GOAL
 
-Apply a reviewable MTG Patch Protocol file in dry-run mode.
+Apply a reviewable COFE Patch Protocol file in dry-run mode.
 The patch protocol lives under `tmp/example-patch.md` and only
 touches files declared below.
 

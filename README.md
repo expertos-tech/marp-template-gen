@@ -10,13 +10,19 @@ Templates can be modular, but generated Marp Markdown files must be self-contain
 
 This project uses a `*` prefix before short commands as a standard for instructions (for example: `*to-marp`), which can be used directly in the chat and work with most agents. These shortcuts automate complex tasks, validate paths and ensure that presentations follow the repository's quality standards.
 
-#### 1. Convert Markdown to Slides
-Transform common text into a Marp presentation (Model 01) in the temporary folder for review:
+#### 1. Generate Marp Markdown
+Generate a self-contained Marp presentation (Model 01) in the temporary folder:
+
+```bash
+npm --prefix scripts run generate-slides -- 01 sample-data/example-presentation.md ./tmp/
+```
+*The generated file will be `tmp/example-presentation-slides.md`.*
+
+To only validate and resolve the target path without conversion:
 
 ```bash
 *to-marp 01 sample-data/example-presentation.md ./tmp/
 ```
-*The generated file will be `tmp/example-presentation-slides.md`.*
 
 #### 2. Export the Presentation
 Generate final files from the validated Marp Markdown:
@@ -37,6 +43,17 @@ Generate final files from the validated Marp Markdown:
 ```text
 .
 ├── README.md
+├── AGENTS.md
+├── docs/
+│   ├── cofe-protocol.md
+│   ├── cofe-task-protocol.md
+│   ├── cofe-patch-protocol.md
+│   ├── examples/
+│   └── web-ui-rules.md
+├── cofe-cmds/
+│   ├── README.md
+│   ├── *.run.md
+│   └── *.patch.md
 ├── sample-data/
 │   └── example-presentation.md
 ├── scripts/
@@ -51,6 +68,27 @@ Generate final files from the validated Marp Markdown:
 │       └── theme.css
 └── .gitignore
 ```
+
+## Folder `docs/`
+
+Comprehensive specification and examples for the **COFE Protocol** (Command Orchestration and File Editing Protocol):
+
+- [`docs/cofe-protocol.md`](./docs/cofe-protocol.md): Protocol overview, design principles, and project adoption.
+- [`docs/cofe-task-protocol.md`](./docs/cofe-task-protocol.md): Task layer specification for command orchestration.
+- [`docs/cofe-patch-protocol.md`](./docs/cofe-patch-protocol.md): Patch layer specification for file editing.
+- [`docs/examples/`](./docs/examples/): Didactic examples of task and patch files.
+
+Read [`docs/cofe-protocol.md`](./docs/cofe-protocol.md) first to understand the full protocol architecture.
+
+## Folder `cofe-cmds/`
+
+Reusable command templates for common workflows:
+
+- [`cofe-cmds/README.md`](./cofe-cmds/README.md): Catalog of available templates.
+- Task templates (`.run.md`): Validation, diagnostics, patch coordination.
+- Patch templates (`.patch.md`): File creation, appending, block replacement.
+
+Templates are ready to use or copy-and-customize. See [`cofe-cmds/README.md`](./cofe-cmds/README.md) for *How to Use*.
 
 ## Folder `sample-data/`
 
