@@ -294,6 +294,7 @@ Parameter convention:
 |---|---|---|
 | `*commit [--all]` | Creates a semantic commit for the current approved work. | `[--all]` |
 | `*push` | Sends commits to the configured remote. | - |
+| `*merge-tmp-branch <branch> [--no-ff] [--delete]` | Merges a `tmp/cofe-patch/*` branch into the current branch under strict safety rules. | `<branch>`<br>`[--no-ff]`<br>`[--delete]` |
 
 #### Session Management
 
@@ -612,6 +613,52 @@ Sends commits to the configured remote.
 * The agent should check the configured remote before sending commits.
 * The command should not create new commits on its own.
 * If there is risk of publishing unapproved changes, the agent should stop and ask for confirmation.
+
+#### `*merge-tmp-branch <branch> [--no-ff] [--delete]`
+
+Merges a temporary branch created by `*apply-patch` into the current branch under strict safety rules.
+
+This command exists to close the loop opened by `*apply-patch`, which always writes to a `tmp/cofe-patch/YYYYMMDD-HHMMSS` branch. It is intentionally restrictive and never publishes anything to a remote.
+
+##### Rules/Validations
+
+* Only branch names that match the prefix `tmp/cofe-patch/` are accepted. Any other branch name must be rejected without action.
+* Before executing, check that `git` is available using `*check-git-cli`, unless that information is already registered in the session context.
+* The working tree of the current branch must be clean. If there are uncommitted or untracked changes that would interact with the merge, stop and ask for explicit user action.
+* The current `HEAD` must not be on the tmp branch itself. The user must already be on the target branch (the one that should receive the merge). If `HEAD` is on the tmp branch, stop and ask the user to switch.
+* The tmp branch must exist locally. The command must not fetch, create, rename or reset branches.
+* Default behavior is fast-forward only (`git merge --ff-only <branch>`). If a fast-forward is not possible, stop and report the situation. Do not silently create a merge commit.
+* With `--no-ff`, the command performs `git merge --no-ff <branch>` and creates a merge commit. This path is destructive in the sense that it produces history, so it requires explicit user confirmation via a numbered menu before execution.
+* `--no-ff` and the default fast-forward mode are mutually exclusive.
+* With `--delete`, after a successful merge, run `git branch -d <branch>` to delete the tmp branch locally. Never use `-D` (force delete). If `-d` refuses to delete, report the problem without forcing.
+* The command never runs `git push`, never updates remotes, never edits files and never creates commits other than the merge commit explicitly produced by `--no-ff`.
+* The command must not rebase, cherry-pick, revert, squash or rewrite history.
+* If any precondition fails, stop with a clear textual report and do not perform any partial Git operation.
+* On success, the agent should print a short report including: target branch, merged branch, merge mode (`fast-forward` or `merge-commit`), and whether the tmp branch was deleted.
+
+Confirmation menu required for `--no-ff`:
+
+```text
+A merge commit will be created on the current branch.
+This operation produces history that cannot be silently undone.
+
+1: Confirm
+2: Cancel
+```
+
+##### Parameters
+
+* `<branch>`
+
+Name of the tmp branch to be merged. Must match the prefix `tmp/cofe-patch/`.
+
+* `[--no-ff]`
+
+Optional flag that forces a merge commit instead of a fast-forward. Requires explicit user confirmation.
+
+* `[--delete]`
+
+Optional flag that deletes the tmp branch locally with `git branch -d` after a successful merge. Never uses force delete.
 
 #### `*save-session`
 

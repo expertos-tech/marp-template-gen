@@ -110,7 +110,7 @@ Both COFE Task and COFE Patch protocols enforce:
 
 - **Path Validation:** Reject absolute paths, `..` traversal, and paths outside the repository.
 - **Allowlist Enforcement:** For `write` mode tasks, declare `ALLOWED_CHANGES` to whitelist modifiable files.
-- **Command Allowlist:** Restrict `RUN` commands to safe prefixes (e.g., `npm --prefix scripts run`).
+- **Command Allowlist:** Restrict `RUN` commands to safe prefixes (e.g., `npm --prefix scripts run`). COFE RUN is allowlist-bounded by design (Option A). Executing general reviewable commands (Option B) is deferred to a future opt-in mode and is not part of the v1 default. See [COFE Task Protocol §6.1](./cofe-task-protocol.md#61-run-semantics-policy).
 - **Git Safety:** Verify clean working tree before patch execution; create temporary branches.
 - **No Destructive Operations:** Runners do not commit, push, install, or delete files without explicit user action.
 
