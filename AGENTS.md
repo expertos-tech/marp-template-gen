@@ -754,21 +754,37 @@ npm --prefix scripts install
 
 Internal command to execute the MTG Patch Protocol from a reviewable Markdown file.
 
+This shortcut is a thin wrapper around the local script. The agent must not manually inspect, validate, reinterpret or execute the patch protocol content. Validation and execution are responsibilities of the executor.
+
 ##### Rules/Validations
 
 * This command is internal and should not appear in standard `*help`.
 * It can only be displayed with `*help --all`, `*help internal-commands` or specific help, such as `*help *apply-patch`.
 * Chat name: `*apply-patch <file.md> [--dry-run] [--force]`.
 * Planned npm command: `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`.
+* The agent must pass the provided path and flags directly to the script after basic shortcut parsing.
+* The agent must not pre-read the patch file to validate its protocol structure.
+* The agent must not manually execute validation commands declared inside the patch file.
+* The agent must not manually apply operations declared inside the patch file.
+* The script is responsible for:
+  * validating the patch file path;
+  * validating the MTG Patch Protocol structure;
+  * validating Git safety;
+  * validating target paths;
+  * simulating or applying supported operations;
+  * producing the final report.
+* After script execution, the agent should inspect only the script exit status and final report.
+* If the script exits successfully, the agent should summarize the success and show the relevant final report.
+* If the script exits with error, the agent should report the error returned by the script without inventing recovery steps.
 * Default behavior saves changes and requires a clean working tree before saving.
 * Every execution that saves changes creates a temporary branch before applying changes.
 * `--dry-run` validates and simulates, without saving changes.
 * `--force` only ignores the clean working tree requirement.
 * `--force` does not ignore merge, rebase, cherry-pick, revert, conflict, invalid protocol, or unsafe path.
-* The v1 executor does not execute shell commands contained in the protocol, it only lists them as recommended validation.
+* The executor does not execute shell commands contained in the protocol, it only lists them as recommended validation.
 * The executor must validate paths to block absolute paths, `..` and writing outside the repository root.
 * The executor must generate a textual report ready to paste into the chat.
-* v1 executor implementation file: `scripts/apply-patch-protocol.mjs`.
+* Executor implementation file: `scripts/apply-patch-protocol.mjs`.
 
 ##### Parameters
 
