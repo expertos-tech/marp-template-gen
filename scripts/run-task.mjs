@@ -47,7 +47,8 @@ Safety:
 const ALLOWED_RUN_PREFIXES = [
   "npm --prefix scripts run pre-run",
   "npm --prefix scripts run validate",
-  "npm --prefix scripts run apply-patch",
+    "npm --prefix scripts run apply-patch",
+  "npm --prefix scripts run bootstrap-template-theme",
   "git status --short",
   "git diff --",
 ];
