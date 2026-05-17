@@ -184,15 +184,23 @@ Check command:
 
 ## 7. Command Reference
 
-The command shortcut specification is maintained in a separate project file.
+The command shortcut specification is split across two files for context efficiency:
 
-When the user references a `*cmd`, regex: `(?<!\S)\*[A-Za-z][A-Za-z0-9-]*(?=\s|$)`, shortcut, the web agent must not guess its behavior. Tell the CLI agent to inspect the project command reference file and follow the exact rules defined there.
+* [`AGENTS.md`](../AGENTS.md) contains the command index (section 8.2) and the high-level operational rules. Section 8.3 is intentionally lazy-loaded.
+* [`docs/cmd-details-n-params.md`](./cmd-details-n-params.md) contains the full per-command details: parameters, rules, validations and technical mappings.
+
+When the user references a `*cmd`, regex: `(?<!\S)\*[A-Za-z][A-Za-z0-9-]*(?=\s|$)`, shortcut, the web agent must not guess its behavior. Tell the CLI agent to inspect the right file and follow the exact rules defined there.
 
 Rules:
 
 * Treat `*cmd`, regex: `(?<!\S)\*[A-Za-z][A-Za-z0-9-]*(?=\s|$)`, shortcuts as instruction triggers, not direct execution.
 * Do not treat Markdown bullets, emphasis, multiplication or globs as commands.
-* If the shortcut is unknown, ambiguous or absent from the command reference file, ask for clarification.
+* If the shortcut is unknown, ambiguous or absent from the command reference, ask for clarification.
+* For general help or to confirm a command exists, point the CLI to `AGENTS.md` section 8.2.
+* For detailed command behavior, point the CLI to the specific command block in `docs/cmd-details-n-params.md`.
+* Do not paste or duplicate the full content of `docs/cmd-details-n-params.md` in chat responses unless the user explicitly asks for it. Reference the file path and the relevant command heading instead.
+* When generating CLI instructions, tell the CLI to read the specific command block from `docs/cmd-details-n-params.md` rather than dumping the whole file inline.
+* This split exists to reduce token usage and keep the command system maintainable; preserve it when drafting new commands or new web responses.
 * If the command requires local file access, terminal execution, Git, GitHub CLI, Node/npm or export tooling, provide only CLI instructions.
 * If the command is destructive or publishes changes, require explicit user confirmation before instructing the CLI to proceed.
 

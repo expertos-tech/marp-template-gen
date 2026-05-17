@@ -21,6 +21,8 @@ These are meant to be referenced and instantiated by agents and Web UI workflows
 | [`validate-scripts.run.md`](./validate-scripts.run.md) | read | Run the full `scripts/` validation suite (pre-run + apply-patch help + both test files). | Yes |
 | [`status-check.run.md`](./status-check.run.md) | read | Quick local diagnostic: `pre-run` plus `git status --short`. | Yes |
 | [`apply-patch-dry-run.run.md`](./apply-patch-dry-run.run.md) | write | Wrapper to validate and simulate a COFE Patch file. Edit `ALLOWED_CHANGES` and `APPLY_PATCH` blocks before running. | No (template) |
+| [`clean.run.md`](./clean.run.md) | read | Placeholder for `*clean`. Documents the runner limitation that blocks safe automated cleanup of `tmp/`. | Placeholder |
+| [`clean-prompt.run.md`](./clean-prompt.run.md) | read | Placeholder for `*clean-prompt`. Documents how to apply `clean-prompt.patch.md` manually and the parameter-passing gap. | Placeholder |
 
 ### Patch templates (`.patch.md`)
 
@@ -29,6 +31,7 @@ These are meant to be referenced and instantiated by agents and Web UI workflows
 | [`create-file.patch.md`](./create-file.patch.md) | `create-file` | Create a brand new file. Fails if the target already exists. |
 | [`append-to-doc.patch.md`](./append-to-doc.patch.md) | `append-file` | Append content to the end of an existing file. Creates the target when missing. |
 | [`replace-block-in-doc.patch.md`](./replace-block-in-doc.patch.md) | `replace-block` | Replace a contiguous range between two unique anchors. |
+| [`clean-prompt.patch.md`](./clean-prompt.patch.md) | `replace-regex` | Reset `tmp/prompt.md` to the canonical prompt template. Limited to cases where the current file matches the canonical template; otherwise the executor refuses the patch. |
 
 ## How to Use
 
