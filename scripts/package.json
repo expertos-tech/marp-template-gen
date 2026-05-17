@@ -15,7 +15,8 @@
     "apply-patch": "node ./apply-patch-protocol.mjs",
     "task": "node ./run-task.mjs",
     "test:apply-patch": "node ./test-apply-patch.mjs",
-    "validate": "npm run pre-run && npm run apply-patch -- --help && npm run test:apply-patch"
+    "test:run-task": "node ./test-run-task.mjs",
+    "validate": "npm run pre-run && npm run apply-patch -- --help && npm run test:apply-patch && npm run test:run-task"
   },
   "engines": {
     "node": ">=22"
