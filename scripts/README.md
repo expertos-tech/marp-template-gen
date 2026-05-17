@@ -124,7 +124,7 @@ Removes instruction HTML comments from a filled Marp Markdown, preserving Marp c
 
 ## `apply-patch`
 
-Executes the MTG Patch Protocol v1 with deterministic validations of security and Git state:
+Executes the COFE Patch Protocol v1 with deterministic validations of security and Git state:
 
 ```bash
 npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
@@ -144,16 +144,16 @@ Implemented scope:
 - reject regex flags and reject `replace-regex` patterns that do not match exactly once;
 - apply all operations in memory first (all-or-nothing for operation failures);
 - require a clean working tree by default for execution with saving, including untracked files;
-- create temporary branch `tmp/mtg-patch/YYYYMMDD-HHMMSS` on execution with saving;
+- create temporary branch `tmp/cofe-patch/YYYYMMDD-HHMMSS` on execution with saving;
 - simulate without saving when `--dry-run` is provided;
 - accept `--force` only to ignore the clean working tree validation;
 - do not execute shell commands declared in the protocol, only report them.
 
-The reference documentation for the protocol is in `docs/mtg-patch-protocol.md`.
+The reference documentation for the protocol is in `docs/cofe-patch-protocol.md`.
 
 ## `task`
 
-Executes a declarative MTG Task Protocol file:
+Executes a declarative COFE Task Protocol file:
 
 ```bash
 npm --prefix scripts run task -- <file.md>
@@ -169,7 +169,7 @@ Flags:
 - `--explain`: print the planned operations as a tree and exit. No execution.
 - `--help`, `-h`: print usage.
 
-The reference documentation for the protocol is in `docs/mtg-task-protocol.md`.
+The reference documentation for the protocol is in `docs/cofe-task-protocol.md`.
 Sample tasks are available in `docs/examples/`.
 
 ## `test:apply-patch`

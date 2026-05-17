@@ -37,7 +37,7 @@ function usage() {
   npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
 
 Goal:
-  Execute MTG Patch Protocol v1 with deterministic validations.
+  Execute COFE Patch Protocol v1 with deterministic validations.
 
 Flags:
   --dry-run  Simulate without writing files and without creating a temporary branch.
@@ -770,14 +770,14 @@ function buildBranchName() {
     `${pad2(now.getUTCHours())}` +
     `${pad2(now.getUTCMinutes())}` +
     `${pad2(now.getUTCSeconds())}`;
-  return `tmp/mtg-patch/${stamp}`;
+  return `tmp/cofe-patch/${stamp}`;
 }
 
 function renderReport(report) {
   const formatYesNo = (value) => (value ? 'yes' : 'no');
   const lines = [];
 
-  lines.push('MTG PATCH REPORT');
+  lines.push('COFE PATCH REPORT');
   lines.push('');
   lines.push(`status: ${report.status}`);
   lines.push(`protocol_file: ${report.protocolFile}`);

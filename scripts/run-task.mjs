@@ -10,14 +10,14 @@ const scriptsDir = path.dirname(scriptPath);
 const repoRoot = path.resolve(scriptsDir, "..");
 
 const HELP = `
-MTG Task Protocol runner
+COFE Task Protocol runner
 
 Usage:
   npm --prefix scripts run task -- [file.md] [--dry-run] [--explain]
   npm --prefix scripts run task -- --help
 
 Description:
-  Executes a declarative MTG Task Protocol file.
+  Executes a declarative COFE Task Protocol file.
   The v1 runner supports READ, RUN, APPLY_PATCH and REPORT blocks.
 
 Flags:
@@ -330,9 +330,9 @@ function parseApplyPatchBlock(content) {
 }
 
 function validateRequiredTaskShape(raw, metadata, blocks) {
-  if (!raw.trimStart().startsWith("# MTG TASK")) {
+  if (!raw.trimStart().startsWith("# COFE TASK")) {
     throw new TaskError("Invalid task file", [
-      "Expected first heading: # MTG TASK",
+      "Expected first heading: # COFE TASK",
     ]);
   }
 
@@ -609,7 +609,7 @@ function runApplyPatch(entry, allowedChanges, logPath) {
 
 function buildReport(summary, reportItems, status, errorMessage = null) {
   const lines = [
-    "# MTG TASK REPORT",
+    "# COFE TASK REPORT",
     "",
     `status: ${status}`,
     `task_file: ${summary.taskFile}`,
@@ -665,7 +665,7 @@ function buildReport(summary, reportItems, status, errorMessage = null) {
 
 function explainPlan(metadata, blocks, parsed) {
   const lines = [];
-  lines.push("# MTG TASK PLAN (explain)");
+  lines.push("# COFE TASK PLAN (explain)");
   lines.push("");
   lines.push(`task_file: ${parsed.taskFileRelative}`);
   lines.push(`id: ${metadata.id}`);
@@ -824,7 +824,7 @@ function main() {
     logPath = logResolved;
 
     const startBlock = [
-      "# MTG TASK EXEC LOG",
+      "# COFE TASK EXEC LOG",
       `started_at: ${nowIso()}`,
       `task_file: ${taskFileRelative}`,
       `id: ${metadata.id}`,

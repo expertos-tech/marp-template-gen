@@ -60,7 +60,7 @@ function defaultMetadata(caseDir, mode = 'read') {
 
 function baseValidTask(caseDir, { mode = 'read', extra = '' } = {}) {
   const { logRelative } = defaultMetadata(caseDir, mode);
-  return `# MTG TASK
+  return `# COFE TASK
 
 id: test-${path.basename(caseDir)}
 mode: ${mode}
@@ -93,7 +93,7 @@ async function testHelpReturnsSuccess() {
     `--help should exit 0, got ${result.status}. stderr=${result.stderr}`,
   );
   assertCondition(
-    result.stdout.includes('MTG Task Protocol runner'),
+    result.stdout.includes('COFE Task Protocol runner'),
     'help output should include header',
   );
 }
@@ -151,11 +151,11 @@ async function testExplainOnlyPrintsPlan() {
   ]);
   assertCondition(result.status === 0, `explain should succeed, got ${result.status}`);
   assertCondition(
-    result.stdout.includes('# MTG TASK PLAN (explain)'),
+    result.stdout.includes('# COFE TASK PLAN (explain)'),
     'expected explain header',
   );
   assertCondition(
-    !result.stdout.includes('MTG TASK REPORT'),
+    !result.stdout.includes('COFE TASK REPORT'),
     'explain must not run the task or print final report',
   );
 }
@@ -184,7 +184,7 @@ async function testInvalidHeadingFails() {
 
 async function testEmptyMetadataFails() {
   const caseDir = await setupCase('empty-metadata');
-  const task = '# MTG TASK\n\nid:\nmode: read\nlog: tmp/x.log\n\n## GOAL\n\nx\n\n## REPORT\n\n- x\n';
+  const task = '# COFE TASK\n\nid:\nmode: read\nlog: tmp/x.log\n\n## GOAL\n\nx\n\n## REPORT\n\n- x\n';
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -197,7 +197,7 @@ async function testEmptyMetadataFails() {
 async function testDuplicateBlockFails() {
   const caseDir = await setupCase('duplicate-block');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: dup\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## READ\n\n- AGENTS.md\n\n## READ\n\n- README.md\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: dup\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## READ\n\n- AGENTS.md\n\n## READ\n\n- README.md\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -210,7 +210,7 @@ async function testDuplicateBlockFails() {
 async function testUnknownBlockFails() {
   const caseDir = await setupCase('unknown-block');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: u\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## STRANGE\n\n- x\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: u\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## STRANGE\n\n- x\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -223,7 +223,7 @@ async function testUnknownBlockFails() {
 async function testReadModeBlocksApplyPatch() {
   const caseDir = await setupCase('read-mode-blocks-patch');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: r\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## APPLY_PATCH\n\nfile: tmp/some-patch.md\ndry_run: true\nforce: false\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: r\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## APPLY_PATCH\n\nfile: tmp/some-patch.md\ndry_run: true\nforce: false\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -236,7 +236,7 @@ async function testReadModeBlocksApplyPatch() {
 async function testAllowlistDenied() {
   const caseDir = await setupCase('allowlist-denied');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- echo hello\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- echo hello\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -249,7 +249,7 @@ async function testAllowlistDenied() {
 async function testMetacharRejected() {
   const caseDir = await setupCase('metachar-rejected');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- git status --short ; ls\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- git status --short ; ls\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -262,7 +262,7 @@ async function testMetacharRejected() {
 async function testUnsafeAbsolutePathRejected() {
   const caseDir = await setupCase('unsafe-path');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## READ\n\n- /etc/passwd\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## READ\n\n- /etc/passwd\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -275,7 +275,7 @@ async function testUnsafeAbsolutePathRejected() {
 async function testDotDotPathRejected() {
   const caseDir = await setupCase('dotdot-path');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## READ\n\n- ../etc/passwd\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## READ\n\n- ../etc/passwd\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -287,7 +287,7 @@ async function testDotDotPathRejected() {
 
 async function testLogOutsideAllowedDirectoryRejected() {
   const caseDir = await setupCase('bad-log-path');
-  const task = `# MTG TASK\n\nid: x\nmode: read\nlog: docs/should-not-be-here.log\n\n## GOAL\n\nx\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: read\nlog: docs/should-not-be-here.log\n\n## GOAL\n\nx\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -300,7 +300,7 @@ async function testLogOutsideAllowedDirectoryRejected() {
 async function testRecursiveTaskInvocationSkipped() {
   const caseDir = await setupCase('recursive-task');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- npm --prefix scripts run task -- tmp/whatever.md\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- npm --prefix scripts run task -- tmp/whatever.md\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 0, `recursion skip should succeed, got ${result.status}`);
@@ -313,7 +313,7 @@ async function testRecursiveTaskInvocationSkipped() {
 async function testUnknownApplyPatchFieldRejected() {
   const caseDir = await setupCase('unknown-apply-field');
   const { logRelative } = defaultMetadata(caseDir);
-  const task = `# MTG TASK\n\nid: x\nmode: write\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## ALLOWED_CHANGES\n\n- ${logRelative}\n\n## APPLY_PATCH\n\nfile: tmp/p.md\nunknown_field: yes\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: write\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## ALLOWED_CHANGES\n\n- ${logRelative}\n\n## APPLY_PATCH\n\nfile: tmp/p.md\nunknown_field: yes\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);
@@ -328,7 +328,7 @@ async function testRunNonZeroExitFails() {
   const { logRelative } = defaultMetadata(caseDir);
   // apply-patch fails when the protocol file does not exist; this exercises
   // the non-zero exit path through an allowlisted command.
-  const task = `# MTG TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- npm --prefix scripts run apply-patch -- tmp/run-task-tests/missing-protocol.md --dry-run\n\n## REPORT\n\n- x\n`;
+  const task = `# COFE TASK\n\nid: x\nmode: read\nlog: ${logRelative}\n\n## GOAL\n\nx\n\n## RUN\n\n- npm --prefix scripts run apply-patch -- tmp/run-task-tests/missing-protocol.md --dry-run\n\n## REPORT\n\n- x\n`;
   await buildTaskFile(caseDir, task);
   const result = runTask([toRepoRelative(path.join(caseDir, 'task.md'))]);
   assertCondition(result.status === 1, `expected exit 1, got ${result.status}`);

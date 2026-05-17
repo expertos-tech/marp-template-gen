@@ -1,4 +1,4 @@
-# MTG TASK
+# COFE TASK
 
 id: example-read-only
 mode: read

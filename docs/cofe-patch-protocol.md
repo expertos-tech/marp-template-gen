@@ -1,8 +1,8 @@
-# MTG Patch Protocol
+# COFE Patch Protocol
 
 ## 1. Protocol Objective
 
-The MTG Patch Protocol defines a reviewable textual format to describe local changes to the repository. The focus is to allow instructions generated in ChatGPT Web to be saved in Markdown, reviewed by a human, simulated and applied locally by a dedicated Node script.
+The COFE Patch Protocol defines a reviewable textual format to describe local changes to the repository. The focus is to allow instructions generated in ChatGPT Web to be saved in Markdown, reviewed by a human, simulated and applied locally by a dedicated Node script.
 
 ## 2. Flow ChatGPT Web -> local agent -> Node script -> report
 
@@ -282,7 +282,7 @@ The textual report must include at least:
 ## 14. Simple protocol example
 
 ```md
-# MTG Patch Protocol
+# COFE Patch Protocol
 
 version: 1
 target_repo: expertos-tech/marp-template-gen

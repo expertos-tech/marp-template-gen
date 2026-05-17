@@ -315,8 +315,8 @@ Mandatory rule: internal commands should not be displayed by the `*help` command
 |---|---|---|
 | `*check-git-cli` | Checks if `git` and `gh` are available in the session. | - |
 | `*pre-run` | Checks local script readiness before Node commands. | - |
-| `*run [file.md]` | Executes the local MTG Task Protocol runner, using `tmp/prompt.md` by default. | `[file.md]` |
-| `*apply-patch <file.md> [--dry-run] [--force]` | Executes local MTG Patch Protocol with security and Git validations. | `<file.md>`<br>`[--dry-run]`<br>`[--force]` |
+| `*run [file.md]` | Executes the local COFE Task Protocol runner, using `tmp/prompt.md` by default. | `[file.md]` |
+| `*apply-patch <file.md> [--dry-run] [--force]` | Executes local COFE Patch Protocol with security and Git validations. | `<file.md>`<br>`[--dry-run]`<br>`[--force]` |
 | `*strip-instructions <source.md> [target.md]` | Removes instruction HTML comments from filled Marp Markdown. | `<source.md>`<br>`[target.md]` |
 
 Technical commands associated with the Marp workflow:
@@ -676,7 +676,7 @@ recommended_action:
 
 #### `*run [file.md]`
 
-Internal command used to execute the local MTG Task Protocol runner.
+Internal command used to execute the local COFE Task Protocol runner.
 
 This shortcut is a thin wrapper around the local script. The agent must not manually inspect, validate, reinterpret or execute the task file content. Validation and execution are responsibilities of the runner.
 
@@ -709,7 +709,7 @@ npm --prefix scripts run task -- <file.md>
 * The agent must not decide which files are allowed to change for the task.
 * The script is responsible for:
   * validating the task file path;
-  * validating the MTG Task Protocol structure;
+  * validating the COFE Task Protocol structure;
   * validating allowed changes;
   * validating command allowlists;
   * executing supported task blocks;
@@ -752,7 +752,7 @@ npm --prefix scripts install
 
 #### `*apply-patch <file.md> [--dry-run] [--force]`
 
-Internal command to execute the MTG Patch Protocol from a reviewable Markdown file.
+Internal command to execute the COFE Patch Protocol from a reviewable Markdown file.
 
 This shortcut is a thin wrapper around the local script. The agent must not manually inspect, validate, reinterpret or execute the patch protocol content. Validation and execution are responsibilities of the executor.
 
@@ -768,7 +768,7 @@ This shortcut is a thin wrapper around the local script. The agent must not manu
 * The agent must not manually apply operations declared inside the patch file.
 * The script is responsible for:
   * validating the patch file path;
-  * validating the MTG Patch Protocol structure;
+  * validating the COFE Patch Protocol structure;
   * validating Git safety;
   * validating target paths;
   * simulating or applying supported operations;
@@ -790,7 +790,7 @@ This shortcut is a thin wrapper around the local script. The agent must not manu
 
 * `<file.md>`
 
-Markdown file with instructions for the MTG Patch Protocol.
+Markdown file with instructions for the COFE Patch Protocol.
 
 * `[--dry-run]`
 

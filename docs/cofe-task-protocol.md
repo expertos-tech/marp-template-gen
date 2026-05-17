@@ -1,8 +1,8 @@
-# MTG Task Protocol
+# COFE Task Protocol
 
 ## 1. Protocol Objective
 
-The MTG Task Protocol defines a reviewable Markdown format to describe and execute a constrained set of operations against the repository. The focus is to let an agent (in chat or locally) declare a task as a single Markdown file, validated and executed by a dedicated Node runner with deterministic behavior.
+The COFE Task Protocol defines a reviewable Markdown format to describe and execute a constrained set of operations against the repository. The focus is to let an agent (in chat or locally) declare a task as a single Markdown file, validated and executed by a dedicated Node runner with deterministic behavior.
 
 ## 2. Flow chat -> local agent -> Node runner -> report
 
@@ -12,12 +12,12 @@ The MTG Task Protocol defines a reviewable Markdown format to describe and execu
    `npm --prefix scripts run task -- <file.md>`.
 4. The runner validates structure, security, modes and allowlists.
 5. The runner executes `READ`, `RUN` and `APPLY_PATCH` blocks, logging incrementally.
-6. The runner prints a `MTG TASK REPORT` ready to paste into chat.
+6. The runner prints a `COFE TASK REPORT` ready to paste into chat.
 
 ## 3. File shape
 
 ```md
-# MTG TASK
+# COFE TASK
 
 id: <identifier>
 mode: read | write
@@ -54,7 +54,7 @@ force: false
 
 Parse rules:
 
-- First heading must be `# MTG TASK`.
+- First heading must be `# COFE TASK`.
 - Metadata lines appear before the first `## BLOCK`. Each line uses `key: value`.
 - Blocks are introduced by `## NAME`. Names are case-insensitive but canonical names are uppercase.
 - Duplicate blocks are rejected.
@@ -124,7 +124,7 @@ The actual write semantics, branch creation and Git safety are owned by `docs/mt
 
 ## 10. Output
 
-The runner always prints a `MTG TASK REPORT` block to stdout, with:
+The runner always prints a `COFE TASK REPORT` block to stdout, with:
 
 - `status`: `success` or `failed`;
 - `task_file`, `id`, `mode`, `log`;

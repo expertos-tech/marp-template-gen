@@ -1,12 +1,12 @@
-# MTG Patch Protocol - E2E Status
+# COFE Protocol - E2E Status
 
 ## 1. Completed state
 
-The MTG Patch Protocol v1 is implemented and integrated in the local workflow.
+The COFE Protocol v1 is implemented and integrated in the local workflow.
 
 Current v1 status:
 
-- protocol documentation exists in `docs/mtg-patch-protocol.md`;
+- protocol documentation exists in `docs/cofe-patch-protocol.md`;
 - executor exists in `scripts/apply-patch-protocol.mjs`;
 - npm command is available:
   - `npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]`;
@@ -37,9 +37,9 @@ Known note:
 ## 3. Relevant commits
 
 - `9bdd4b39cf7cfcbe94e6c304d3da2c69e05a4a68`
-  - `docs(protocol): translate mtg patch protocol documentation to english`
+  - `docs(protocol): translate cofe patch protocol documentation to english`
 - `3b8d56ec7675b230bc9aec718e56a94e0ffcab9b`
-  - `feat(scripts): implement mtg patch protocol v1 executor`
+  - `feat(scripts): implement cofe patch protocol v1 executor`
 - `925cfd2`
   - `test(scripts): add apply-patch dry-run coverage`
 - `edb3e6e`
