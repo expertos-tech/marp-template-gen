@@ -3,11 +3,11 @@ import path from 'node:path';
 
 const marker = path.join(scriptsDir, '.npm-installed');
 const content = [
-  'instalado=true',
+  'installed=true',
   `node=${process.version}`,
-  `data=${new Date().toISOString()}`,
+  `date=${new Date().toISOString()}`,
   '',
 ].join('\n');
 
 await writeText(marker, content);
-console.log(`marcador criado: ${marker}`);
+console.log(`marker created: ${marker}`);

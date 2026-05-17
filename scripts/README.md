@@ -34,7 +34,9 @@ npm --prefix scripts run embed-images -- <source.md> [target.md]
 npm --prefix scripts run marp-export -- <type> <source.md> [target]
 npm --prefix scripts run strip-instructions -- <source.md> [target.md]
 npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
+npm --prefix scripts run task -- [file.md] [--dry-run] [--explain]
 npm --prefix scripts run test:apply-patch
+npm --prefix scripts run test:run-task
 npm --prefix scripts run validate
 ```
 
@@ -145,6 +147,27 @@ Implemented scope for v1:
 - do not execute shell commands declared in the protocol, only report them.
 
 The reference documentation for the protocol is in `docs/mtg-patch-protocol.md`.
+
+## `task`
+
+Executes a declarative MTG Task Protocol file:
+
+```bash
+npm --prefix scripts run task -- <file.md>
+```
+
+Default file is `tmp/prompt.md` when no argument is provided.
+
+Supported blocks: `## GOAL`, `## ALLOWED_CHANGES`, `## READ`, `## RUN`, `## APPLY_PATCH`, `## REPORT`.
+
+Flags:
+
+- `--dry-run`: parse and validate, skip every `RUN` and `APPLY_PATCH` execution.
+- `--explain`: print the planned operations as a tree and exit. No execution.
+- `--help`, `-h`: print usage.
+
+The reference documentation for the protocol is in `docs/mtg-task-protocol.md`.
+Sample tasks are available in `docs/examples/`.
 
 ## `test:apply-patch`
 

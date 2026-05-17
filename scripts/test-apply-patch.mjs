@@ -88,7 +88,7 @@ async function main() {
   await runTest('--help returns success', async () => {
     const result = runApplyPatch(['--help']);
     assertCondition(result.status === 0, 'expected exit code 0 for --help');
-    assertCondition(result.stdout.includes('Uso:'), 'expected help usage text in stdout');
+    assertCondition(result.stdout.includes('Usage:'), 'expected help usage text in stdout');
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
   }, state);
 
@@ -114,7 +114,7 @@ Inserido antes
     assertCondition(result.status === 0, 'expected exit code 0');
     assertCondition(result.stdout.includes('status: success'), 'expected success status');
     assertCondition(
-      result.stdout.includes('insert-before (simulada)'),
+      result.stdout.includes('insert-before (simulated)'),
       'expected simulated insert-before operation',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -142,7 +142,7 @@ Inserido depois
     assertCondition(result.status === 0, 'expected exit code 0');
     assertCondition(result.stdout.includes('status: success'), 'expected success status');
     assertCondition(
-      result.stdout.includes('insert-after (simulada)'),
+      result.stdout.includes('insert-after (simulated)'),
       'expected simulated insert-after operation',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -170,7 +170,7 @@ Inserido apos linha 1
     assertCondition(result.status === 0, 'expected exit code 0');
     assertCondition(result.stdout.includes('status: success'), 'expected success status');
     assertCondition(
-      result.stdout.includes('insert-after-line (simulada)'),
+      result.stdout.includes('insert-after-line (simulated)'),
       'expected simulated insert-after-line operation',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -197,7 +197,7 @@ Anexo
     assertCondition(result.status === 0, 'expected exit code 0');
     assertCondition(result.stdout.includes('status: success'), 'expected success status');
     assertCondition(
-      result.stdout.includes('append-file (simulada)'),
+      result.stdout.includes('append-file (simulated)'),
       'expected simulated append-file operation',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -223,7 +223,7 @@ Novo arquivo
     assertCondition(result.status === 0, 'expected exit code 0');
     assertCondition(result.stdout.includes('status: success'), 'expected success status');
     assertCondition(
-      result.stdout.includes('create-file (simulada)'),
+      result.stdout.includes('create-file (simulated)'),
       'expected simulated create-file operation',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -313,7 +313,7 @@ Nao entra
     assertCondition(result.status === 1, 'expected exit code 1');
     assertCondition(result.stdout.includes('status: failed'), 'expected failed status');
     assertCondition(
-      result.stdout.includes('anchor nao encontrado'),
+      result.stdout.includes('anchor not found'),
       'expected missing anchor error',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -341,7 +341,7 @@ Nao entra
     assertCondition(result.status === 1, 'expected exit code 1');
     assertCondition(result.stdout.includes('status: failed'), 'expected failed status');
     assertCondition(
-      result.stdout.includes('anchor com multiplas ocorrencias'),
+      result.stdout.includes('anchor matches multiple occurrences'),
       'expected duplicate anchor error',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -366,7 +366,7 @@ Nao entra
     assertCondition(result.status === 1, 'expected exit code 1');
     assertCondition(result.stdout.includes('status: failed'), 'expected failed status');
     assertCondition(
-      result.stdout.includes('caminho absoluto bloqueado'),
+      result.stdout.includes('absolute path blocked'),
       'expected absolute path error',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -391,7 +391,7 @@ Nao entra
     assertCondition(result.status === 1, 'expected exit code 1');
     assertCondition(result.stdout.includes('status: failed'), 'expected failed status');
     assertCondition(
-      result.stdout.includes("caminho com '..' bloqueado"),
+      result.stdout.includes("path containing '..' blocked"),
       'expected dot-dot path error',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -418,7 +418,7 @@ Novo conteudo
     assertCondition(result.status === 1, 'expected exit code 1');
     assertCondition(result.stdout.includes('status: failed'), 'expected failed status');
     assertCondition(
-      result.stdout.includes('arquivo ja existe para create-file'),
+      result.stdout.includes('file already exists for create-file'),
       'expected create-file existing error',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
@@ -445,7 +445,7 @@ Nao entra
     assertCondition(result.status === 1, 'expected exit code 1');
     assertCondition(result.stdout.includes('status: failed'), 'expected failed status');
     assertCondition(
-      result.stdout.includes('comando nao suportado na v1'),
+      result.stdout.includes('command not supported in v1'),
       'expected unsupported command error',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');

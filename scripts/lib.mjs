@@ -1,4 +1,4 @@
-import { access, readFile, writeFile } from 'node:fs/promises';
+import { access, readFile, stat, writeFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,7 +10,7 @@ export const invocationCwd = process.env.INIT_CWD
   : process.cwd();
 
 export function fail(message) {
-  console.error(`erro: ${message}`);
+  console.error(`error: ${message}`);
   process.exit(1);
 }
 
@@ -25,8 +25,8 @@ export async function exists(filePath) {
 
 export async function isFile(filePath) {
   try {
-    const stat = await import('node:fs/promises').then((fs) => fs.stat(filePath));
-    return stat.isFile();
+    const stats = await stat(filePath);
+    return stats.isFile();
   } catch {
     return false;
   }
@@ -34,8 +34,8 @@ export async function isFile(filePath) {
 
 export async function isDirectory(filePath) {
   try {
-    const stat = await import('node:fs/promises').then((fs) => fs.stat(filePath));
-    return stat.isDirectory();
+    const stats = await stat(filePath);
+    return stats.isDirectory();
   } catch {
     return false;
   }
@@ -47,7 +47,7 @@ export function normalizeModel(rawModel) {
   const rawNumber = modelMatch?.[1] ?? numberMatch?.[1];
 
   if (!rawNumber) {
-    fail(`modelo invalido '${rawModel}'. Use 01, 1 ou model-01.`);
+    fail(`invalid model '${rawModel}'. Use 01, 1 or model-01.`);
   }
 
   return `model-${String(Number.parseInt(rawNumber, 10)).padStart(2, '0')}`;
@@ -55,7 +55,7 @@ export function normalizeModel(rawModel) {
 
 export function ensureMarkdownPath(label, filePath) {
   if (!filePath.endsWith('.md')) {
-    fail(`${label} deve terminar em .md: ${filePath}`);
+    fail(`${label} must end with .md: ${filePath}`);
   }
 }
 

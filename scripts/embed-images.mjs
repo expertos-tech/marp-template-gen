@@ -13,18 +13,18 @@ import {
 const LARGE_FILE_THRESHOLD = 2 * 1024 * 1024;
 
 function usage() {
-  console.log(`Uso:
+  console.log(`Usage:
   npm --prefix scripts run embed-images -- <source.md> [target.md]
 
-Objetivo:
-  Converter referencias de imagem locais em Markdown e HTML para data: URI.
+Goal:
+  Convert local image references in Markdown and HTML to data: URI.
 
-Regras:
-  - Suporta Markdown: ![alt](path)
-  - Suporta HTML: <img src="path" ...>
-  - Ignora URLs remotas (http/https) e data: URI
-  - Suporta png, jpg, jpeg, webp e svg
-  - Se target nao for informado, sobrescreve source com escrita segura`);
+Rules:
+  - Supports Markdown: ![alt](path)
+  - Supports HTML: <img src="path" ...>
+  - Ignores remote URLs (http/https) and data: URI
+  - Supports png, jpg, jpeg, webp and svg
+  - If target is not provided, overwrites source with safe write`);
 }
 
 function isRemoteOrEmbedded(ref) {
@@ -37,7 +37,7 @@ function toMimeType(imagePath) {
   if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
   if (ext === '.webp') return 'image/webp';
   if (ext === '.svg') return 'image/svg+xml';
-  fail(`extensao de imagem nao suportada: ${imagePath}`);
+  fail(`unsupported image extension: ${imagePath}`);
 }
 
 function parseMarkdownDestination(rawDestination) {
@@ -70,13 +70,13 @@ async function buildDataUri(referencePath, sourceDir) {
     : path.resolve(sourceDir, referencePath);
 
   if (!(await isFile(resolved))) {
-    fail(`imagem local nao encontrada: ${referencePath}`);
+    fail(`local image not found: ${referencePath}`);
   }
 
   const buffer = await readFile(resolved);
   if (buffer.byteLength > LARGE_FILE_THRESHOLD) {
     console.error(
-      `aviso: imagem grande detectada (${buffer.byteLength} bytes): ${referencePath}`,
+      `warning: large image detected (${buffer.byteLength} bytes): ${referencePath}`,
     );
   }
 
@@ -184,7 +184,7 @@ async function main() {
 
   const source = resolveInputPath(rawSource);
   if (!(await isFile(source))) {
-    fail(`source nao existe ou nao e arquivo: ${rawSource}`);
+    fail(`source does not exist or is not a file: ${rawSource}`);
   }
 
   const target = rawTarget ? resolveInputPath(rawTarget) : source;
@@ -192,7 +192,7 @@ async function main() {
 
   const targetDir = path.dirname(target);
   if (!(await isDirectory(targetDir))) {
-    fail(`diretorio do target nao existe: ${targetDir}`);
+    fail(`target directory does not exist: ${targetDir}`);
   }
 
   const sourceDir = path.dirname(source);
