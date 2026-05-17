@@ -80,6 +80,7 @@ Before changing templates, instructions, export scripts or presentation content,
 * [Templates README](./templates/README.md)
 * [Model-01 Instructions](./templates/model-01/instructions.md)
 * [Scripts README](./scripts/README.md), when the task involves Node utilities or npm commands.
+* [COFE Protocol Overview](./docs/cofe-protocol.md), when the task involves the `*run` or `*apply-patch` commands or any COFE Task/Patch file.
 
 When working with Marp behavior, consult the official Marp documentation if local documentation does not answer the question.
 <!-- END MANDATORY-READING -->

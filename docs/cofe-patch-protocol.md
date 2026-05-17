@@ -214,7 +214,7 @@ On execution with saving, the default behavior requires a clean working tree, in
 
 Every execution with saving must create a temporary branch before applying changes, using format:
 
-`tmp/mtg-patch/YYYYMMDD-HHMMSS`
+`tmp/cofe-patch/YYYYMMDD-HHMMSS`
 
 ## 8. `--dry-run` rule
 

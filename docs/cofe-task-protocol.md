@@ -107,7 +107,7 @@ For each `APPLY_PATCH` entry, the runner:
 3. Extracts every `[CHANGE-FILE: ...]` from the protocol, normalizes the path, and confirms each target also appears in `ALLOWED_CHANGES`.
 4. Builds the command `npm --prefix scripts run apply-patch -- <file> [--dry-run] [--force]` and executes it through the allowlisted channel.
 
-The actual write semantics, branch creation and Git safety are owned by `docs/mtg-patch-protocol.md`.
+The actual write semantics, branch creation and Git safety are owned by `docs/cofe-patch-protocol.md`.
 
 ## 8. ALLOWED_CHANGES
 

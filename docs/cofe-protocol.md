@@ -39,24 +39,16 @@ Responsible for:
 
 **Reference:** [COFE Patch Protocol](./cofe-patch-protocol.md)
 
-## 2. Project-Local Implementation: MTG Protocol
+## 2. Project Adoption
 
-The **Marp Template Gen** (MTG) project was the origin of the COFE Protocol design.
+The **Marp Template Gen** project is the first adopter and reference implementation of the COFE Protocol. All task and patch files in this repository follow the COFE specification:
 
-The MTG Task and Patch Protocols are the project-local instantiation of the generic COFE Protocol:
+| Layer | Specification | Implementation |
+|-------|---------------|----------------|
+| COFE Task Protocol | [docs/cofe-task-protocol.md](./cofe-task-protocol.md) | `scripts/run-task.mjs` |
+| COFE Patch Protocol | [docs/cofe-patch-protocol.md](./cofe-patch-protocol.md) | `scripts/apply-patch-protocol.mjs` |
 
-| Generic | Project-Local | Location |
-|---------|---------------|----------|
-| COFE Task Protocol | MTG Task Protocol | [docs/cofe-task-protocol.md](./cofe-task-protocol.md) |
-| COFE Patch Protocol | MTG Patch Protocol | [docs/cofe-patch-protocol.md](./cofe-patch-protocol.md) |
-
-### 2.1 Parser Contract
-
-Tasks are identified by the heading `# COFE TASK`. Patches are described using block markers `[CHANGE-FILE: ...]` and operation tags `<cmd:...>...</cmd:...>`.
-
-For backward compatibility and clarity:
-- The Marp Template Gen project uses `# COFE TASK` in all new files.
-- Historical MTG-era names (`# MTG TASK`, temporary branch prefix `tmp/mtg-patch/`) are preserved in the test suite and internal branch tracking to maintain continuity of existing workflows.
+Tasks are identified by the heading `# COFE TASK`. Patches are described using block markers `[CHANGE-FILE: ...]` and operation tags `<cmd:...>...</cmd:...>`. Temporary branches created by the patch executor follow the format `tmp/cofe-patch/YYYYMMDD-HHMMSS`.
 
 ## 3. Use Cases
 

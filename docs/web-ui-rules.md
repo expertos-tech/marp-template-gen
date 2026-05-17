@@ -69,8 +69,6 @@ COFE has two layers:
 - **Command Orchestration (Task Layer):** Declarative task files (`# COFE TASK`) that orchestrate reads, shell commands, and patch applications. Reference: [COFE Task Protocol](./cofe-task-protocol.md)
 - **File Editing (Patch Layer):** Reviewable patch files describing file changes using anchors and operations. Reference: [COFE Patch Protocol](./cofe-patch-protocol.md)
 
-**Key distinction:** COFE is the generic protocol name; MTG Task/Patch Protocols are the project-local implementation inside Marp Template Gen.
-
 When instructing the CLI:
 - Tell it to use `npm --prefix scripts run task -- <file.md>` for COFE Task execution.
 - Tell it to use `npm --prefix scripts run apply-patch -- <file.md>` for COFE Patch application.
