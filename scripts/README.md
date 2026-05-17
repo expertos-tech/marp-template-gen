@@ -164,6 +164,7 @@ npm --prefix scripts run task -- <file.md>
 Default file is `tmp/prompt.md` when no argument is provided.
 
 Supported blocks: `## GOAL`, `## ALLOWED_CHANGES`, `## READ`, `## RUN`, `## APPLY_PATCH`, `## REPORT`.
+Required blocks: `## GOAL` and `## REPORT`.
 
 Flags:
 
@@ -193,3 +194,4 @@ Runs the quick validation chain for scripts in this order:
 1. `npm run pre-run`
 2. `npm run apply-patch -- --help`
 3. `npm run test:apply-patch`
+4. `npm run test:run-task`

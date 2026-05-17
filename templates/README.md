@@ -45,13 +45,13 @@ Before conversions and validations, run the preflight:
 npm --prefix scripts run pre-run
 ```
 
-Expected commands after creating `package.json`:
+To export a filled, self-contained Marp Markdown, use the scripts tooling:
 
 ```bash
-npm run render:pdf -- templates/model-01/presentation-marp.md
-npm run render:html -- templates/model-01/presentation-marp.md
-npm run render:preview -- templates/model-01/presentation-marp.md
-npm run render:pptx -- templates/model-01/presentation-marp.md
+npm --prefix scripts run marp-export -- pdf templates/model-01/presentation-marp.md
+npm --prefix scripts run marp-export -- html templates/model-01/presentation-marp.md
+npm --prefix scripts run marp-export -- png templates/model-01/presentation-marp.md
+npm --prefix scripts run marp-export -- pptx templates/model-01/presentation-marp.md
 ```
 
 To validate the modular template directly, the base Marp CLI command can register the local theme:

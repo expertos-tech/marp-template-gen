@@ -58,8 +58,9 @@ Parse rules:
 - Metadata lines appear before the first `## BLOCK`. Each line uses `key: value`.
 - Blocks are introduced by `## NAME`. Names are case-insensitive but canonical names are uppercase.
 - Duplicate blocks are rejected.
+- `GOAL` and `REPORT` blocks are required.
 - `READ`, `RUN` and `ALLOWED_CHANGES` blocks are bullet lists (`- value`).
-- `APPLY_PATCH` is a list of entries. Each entry starts with `file: <path>` and optionally adds `dry_run: true|false` and `force: true|false` before the next `file:`.
+- `APPLY_PATCH` is a list of entries. Each entry starts with `file: <path>` and optionally adds `dry_run: true|false` or `dryRun: true|false`, plus `force: true|false`, before the next `file:`.
 - Unknown fields inside `APPLY_PATCH` entries cause the task to fail.
 - `REPORT` is a bullet list copied verbatim into the final report.
 
@@ -73,7 +74,7 @@ Empty or missing required metadata fails fast.
 
 ## 5. Mode semantics
 
-- `mode: read`: only `READ` and read-only `RUN` commands are allowed. `APPLY_PATCH` blocks are rejected.
+- `mode: read`: only `READ` and read-only `RUN` commands are allowed. `APPLY_PATCH` entries are rejected.
 - `mode: write`: all supported blocks are allowed within their own rules.
 
 ## 6. RUN allowlist and blocklist
@@ -85,7 +86,6 @@ Allowed prefixes (v1):
 - `npm --prefix scripts run pre-run`
 - `npm --prefix scripts run validate`
 - `npm --prefix scripts run apply-patch`
-- `npm --prefix scripts run task`
 - `git status --short`
 - `git diff --`
 
@@ -93,8 +93,11 @@ Rejected unconditionally:
 
 - any metacharacter from `; | & $ ( ) < > \` `` ` `` `"` `'` `\` newline tab;
 - any form of `rm`, `npm install`, `npm i`, `git commit`, `git push`;
-- any command beginning with `npm --prefix scripts run task` (anti-recursion);
 - arguments containing `..` segments are not rejected by RUN itself, but `APPLY_PATCH` paths reject them.
+
+Special case:
+
+- commands beginning with `npm --prefix scripts run task` are skipped with a warning to avoid recursion.
 
 Commands execute with `shell: false`. There is no shell interpolation.
 
