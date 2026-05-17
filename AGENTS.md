@@ -315,6 +315,7 @@ Mandatory rule: internal commands should not be displayed by the `*help` command
 |---|---|---|
 | `*check-git-cli` | Checks if `git` and `gh` are available in the session. | - |
 | `*pre-run` | Checks local script readiness before Node commands. | - |
+| `*run [file.md]` | Executes the local MTG Task Protocol runner, using `tmp/prompt.md` by default. | `[file.md]` |
 | `*apply-patch <file.md> [--dry-run] [--force]` | Executes local MTG Patch Protocol with security and Git validations. | `<file.md>`<br>`[--dry-run]`<br>`[--force]` |
 | `*strip-instructions <source.md> [target.md]` | Removes instruction HTML comments from filled Marp Markdown. | `<source.md>`<br>`[target.md]` |
 
@@ -672,6 +673,59 @@ gh_seems_github_cli: yes|no
 recommended_action:
 - use git for local operations
 - use gh only when available and when task requires GitHub CLI
+
+#### `*run [file.md]`
+
+Internal command used to execute the local MTG Task Protocol runner.
+
+This shortcut is a thin wrapper around the local script. The agent must not manually inspect, validate, reinterpret or execute the task file content. Validation and execution are responsibilities of the runner.
+
+##### Rules/Validations
+
+* This command is internal and should not appear in standard `*help`.
+* It can only be displayed with `*help --all`, `*help internal-commands` or specific help, such as `*help *run`.
+* Without parameters, execute exactly:
+
+```bash
+npm --prefix scripts run task
+```
+
+* Without parameters, the runner uses its default task file:
+
+```text
+tmp/prompt.md
+```
+
+* With `[file.md]`, execute exactly:
+
+```bash
+npm --prefix scripts run task -- <file.md>
+```
+
+* The agent must pass the provided path directly to the script after basic shortcut parsing.
+* The agent must not pre-read the task file to validate its protocol structure.
+* The agent must not manually execute commands declared inside the task file.
+* The agent must not manually apply patches declared inside the task file.
+* The agent must not decide which files are allowed to change for the task.
+* The script is responsible for:
+  * validating the task file path;
+  * validating the MTG Task Protocol structure;
+  * validating allowed changes;
+  * validating command allowlists;
+  * executing supported task blocks;
+  * writing the execution log;
+  * producing the final report.
+* After script execution, the agent should inspect only the script exit status and final report.
+* If the script exits successfully, the agent should summarize the success and show the relevant final report.
+* If the script exits with error, the agent should report the error returned by the script without inventing recovery steps.
+* The agent may ask for user approval only when the script report indicates a pending user decision, destructive action, Git action or ambiguity.
+* If `tmp/prompt.md` does not exist when running without parameters, the command should fail through the script, not through manual agent validation.
+
+##### Parameters
+
+* `[file.md]`
+
+Optional task file. When omitted, `tmp/prompt.md` is used.
 
 #### `*pre-run`
 
