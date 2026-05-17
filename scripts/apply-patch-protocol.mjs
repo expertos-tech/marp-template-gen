@@ -17,7 +17,13 @@ const SUPPORTED_COMMANDS = new Set([
   'insert-after-line',
   'append-file',
   'create-file',
+  'replace-block',
+  'remove-block',
+  'replace-text',
+  'replace-regex',
 ]);
+
+const COMMANDS_WITHOUT_CONTENT = new Set(['remove-block']);
 
 class ProtocolError extends Error {
   constructor(message) {
@@ -202,18 +208,36 @@ function parseCommandBlock(lines, startLineIndex, commandName, filePath) {
     );
   }
 
+  if (!SUPPORTED_COMMANDS.has(commandName)) {
+    throw new ProtocolError(`line ${startLineIndex + 1}: command not supported: ${commandName}`);
+  }
+
   const bodyLines = lines.slice(startLineIndex + 1, closeIndex);
+  const requiresContent = !COMMANDS_WITHOUT_CONTENT.has(commandName);
   const contentMarkerIndex = bodyLines.findIndex((line) => line.trim() === 'content:|');
-  if (contentMarkerIndex === -1) {
+
+  if (requiresContent && contentMarkerIndex === -1) {
     throw new ProtocolError(
       `line ${startLineIndex + 1}: <cmd:${commandName}> missing content:|`,
     );
   }
 
-  const metadataLines = bodyLines.slice(0, contentMarkerIndex);
-  const contentLines = bodyLines.slice(contentMarkerIndex + 1);
+  if (!requiresContent && contentMarkerIndex !== -1) {
+    throw new ProtocolError(
+      `line ${startLineIndex + 1}: <cmd:${commandName}> does not accept content:|`,
+    );
+  }
+
+  const metadataLines =
+    contentMarkerIndex === -1 ? bodyLines : bodyLines.slice(0, contentMarkerIndex);
+  const contentLines =
+    contentMarkerIndex === -1 ? [] : bodyLines.slice(contentMarkerIndex + 1);
   const content = contentLines.join('\n');
   let anchor = null;
+  let anchorStart = null;
+  let anchorEnd = null;
+  let pattern = null;
+  let confirm = null;
   let lineNumber = null;
 
   for (const metadataLine of metadataLines) {
@@ -235,6 +259,70 @@ function parseCommandBlock(lines, startLineIndex, commandName, filePath) {
         );
       }
       anchor = anchorValue;
+      continue;
+    }
+
+    const anchorStartValue = parseLineField(metadataLine, 'anchor_start');
+    if (anchorStartValue !== null) {
+      if (anchorStart !== null) {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: anchor_start field repeated in <cmd:${commandName}>`,
+        );
+      }
+      if (!anchorStartValue) {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: empty anchor_start field in <cmd:${commandName}>`,
+        );
+      }
+      anchorStart = anchorStartValue;
+      continue;
+    }
+
+    const anchorEndValue = parseLineField(metadataLine, 'anchor_end');
+    if (anchorEndValue !== null) {
+      if (anchorEnd !== null) {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: anchor_end field repeated in <cmd:${commandName}>`,
+        );
+      }
+      if (!anchorEndValue) {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: empty anchor_end field in <cmd:${commandName}>`,
+        );
+      }
+      anchorEnd = anchorEndValue;
+      continue;
+    }
+
+    const patternValue = parseLineField(metadataLine, 'pattern');
+    if (patternValue !== null) {
+      if (pattern !== null) {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: pattern field repeated in <cmd:${commandName}>`,
+        );
+      }
+      if (!patternValue) {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: empty pattern field in <cmd:${commandName}>`,
+        );
+      }
+      pattern = patternValue;
+      continue;
+    }
+
+    const confirmValue = parseLineField(metadataLine, 'confirm');
+    if (confirmValue !== null) {
+      if (confirm !== null) {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: confirm field repeated in <cmd:${commandName}>`,
+        );
+      }
+      if (confirmValue !== 'true' && confirmValue !== 'false') {
+        throw new ProtocolError(
+          `line ${startLineIndex + 1}: confirm field must be 'true' or 'false' in <cmd:${commandName}>`,
+        );
+      }
+      confirm = confirmValue === 'true';
       continue;
     }
 
@@ -261,10 +349,6 @@ function parseCommandBlock(lines, startLineIndex, commandName, filePath) {
     );
   }
 
-  if (!SUPPORTED_COMMANDS.has(commandName)) {
-    throw new ProtocolError(`line ${startLineIndex + 1}: command not supported in v1: ${commandName}`);
-  }
-
   if ((commandName === 'insert-before' || commandName === 'insert-after') && anchor === null) {
     throw new ProtocolError(
       `line ${startLineIndex + 1}: <cmd:${commandName}> requires anchor field`,
@@ -289,12 +373,81 @@ function parseCommandBlock(lines, startLineIndex, commandName, filePath) {
     );
   }
 
+  if (commandName === 'replace-block' || commandName === 'remove-block') {
+    if (anchorStart === null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:${commandName}> requires anchor_start field`,
+      );
+    }
+    if (anchorEnd === null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:${commandName}> requires anchor_end field`,
+      );
+    }
+    if (anchor !== null || lineNumber !== null || pattern !== null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:${commandName}> does not accept anchor, line or pattern fields`,
+      );
+    }
+  }
+
+  if (commandName === 'replace-block') {
+    if (confirm !== null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:replace-block> does not accept confirm field`,
+      );
+    }
+    if (content.length === 0) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:replace-block> requires non-empty content; use <cmd:remove-block> to remove a range`,
+      );
+    }
+  }
+
+  if (commandName === 'remove-block') {
+    if (confirm !== true) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:remove-block> requires 'confirm: true'`,
+      );
+    }
+  }
+
+  if (commandName === 'replace-text') {
+    if (anchor === null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:replace-text> requires anchor field`,
+      );
+    }
+    if (anchorStart !== null || anchorEnd !== null || lineNumber !== null || pattern !== null || confirm !== null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:replace-text> only accepts anchor field`,
+      );
+    }
+  }
+
+  if (commandName === 'replace-regex') {
+    if (pattern === null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:replace-regex> requires pattern field`,
+      );
+    }
+    if (anchor !== null || anchorStart !== null || anchorEnd !== null || lineNumber !== null || confirm !== null) {
+      throw new ProtocolError(
+        `line ${startLineIndex + 1}: <cmd:replace-regex> only accepts pattern field`,
+      );
+    }
+  }
+
   return {
     nextLineIndex: closeIndex,
     operation: {
       type: commandName,
       filePath,
       anchor,
+      anchorStart,
+      anchorEnd,
+      pattern,
+      confirm,
       lineNumber,
       content,
       line: startLineIndex + 1,
@@ -382,6 +535,39 @@ function getAnchorOccurrence(text, anchor, lineNumber) {
   return firstIndex;
 }
 
+function getNamedAnchorOccurrence(text, anchor, fieldName, lineNumber) {
+  if (!anchor) {
+    throw new ProtocolError(`line ${lineNumber}: empty ${fieldName}`);
+  }
+
+  const firstIndex = text.indexOf(anchor);
+  if (firstIndex === -1) {
+    throw new ProtocolError(`line ${lineNumber}: ${fieldName} not found`);
+  }
+
+  const secondIndex = text.indexOf(anchor, firstIndex + anchor.length);
+  if (secondIndex !== -1) {
+    throw new ProtocolError(
+      `line ${lineNumber}: ${fieldName} matches multiple occurrences`,
+    );
+  }
+
+  return firstIndex;
+}
+
+function lineNumberAtIndex(text, index) {
+  if (index <= 0) {
+    return 1;
+  }
+  let count = 1;
+  for (let i = 0; i < index && i < text.length; i += 1) {
+    if (text.charCodeAt(i) === 10) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
 function countLines(content) {
   if (content.length === 0) {
     return 0;
@@ -392,21 +578,25 @@ function countLines(content) {
 function applyOperationToContent(operation, currentContent) {
   if (operation.type === 'insert-before') {
     const anchorIndex = getAnchorOccurrence(currentContent, operation.anchor, operation.line);
-    return (
-      currentContent.slice(0, anchorIndex) +
-      operation.content +
-      currentContent.slice(anchorIndex)
-    );
+    return {
+      content:
+        currentContent.slice(0, anchorIndex) +
+        operation.content +
+        currentContent.slice(anchorIndex),
+      detail: '',
+    };
   }
 
   if (operation.type === 'insert-after') {
     const anchorIndex = getAnchorOccurrence(currentContent, operation.anchor, operation.line);
     const insertIndex = anchorIndex + operation.anchor.length;
-    return (
-      currentContent.slice(0, insertIndex) +
-      operation.content +
-      currentContent.slice(insertIndex)
-    );
+    return {
+      content:
+        currentContent.slice(0, insertIndex) +
+        operation.content +
+        currentContent.slice(insertIndex),
+      detail: '',
+    };
   }
 
   if (operation.type === 'insert-after-line') {
@@ -425,18 +615,120 @@ function applyOperationToContent(operation, currentContent) {
     const lines = currentContent.split('\n');
     const before = lines.slice(0, operation.lineNumber);
     const after = lines.slice(operation.lineNumber);
-    return [...before, operation.content, ...after].join('\n');
+    return {
+      content: [...before, operation.content, ...after].join('\n'),
+      detail: '',
+    };
   }
 
   if (operation.type === 'append-file') {
-    return currentContent + operation.content;
+    return { content: currentContent + operation.content, detail: '' };
   }
 
   if (operation.type === 'create-file') {
-    return operation.content;
+    return { content: operation.content, detail: '' };
   }
 
-  throw new ProtocolError(`operation not supported in v1: ${operation.type}`);
+  if (operation.type === 'replace-block' || operation.type === 'remove-block') {
+    const startIndex = getNamedAnchorOccurrence(
+      currentContent,
+      operation.anchorStart,
+      'anchor_start',
+      operation.line,
+    );
+    const endIndex = getNamedAnchorOccurrence(
+      currentContent,
+      operation.anchorEnd,
+      'anchor_end',
+      operation.line,
+    );
+
+    if (endIndex < startIndex) {
+      throw new ProtocolError(
+        `line ${operation.line}: anchor_end appears before anchor_start`,
+      );
+    }
+
+    const endExclusive = endIndex + operation.anchorEnd.length;
+    const removedSlice = currentContent.slice(startIndex, endExclusive);
+    const startLine = lineNumberAtIndex(currentContent, startIndex);
+    const endLine = lineNumberAtIndex(currentContent, endExclusive - 1);
+
+    if (operation.type === 'replace-block') {
+      return {
+        content:
+          currentContent.slice(0, startIndex) +
+          operation.content +
+          currentContent.slice(endExclusive),
+        detail: `lines ${startLine}-${endLine}`,
+      };
+    }
+
+    let newContent =
+      currentContent.slice(0, startIndex) + currentContent.slice(endExclusive);
+
+    if (
+      startIndex > 0 &&
+      currentContent.charCodeAt(startIndex - 1) === 10 &&
+      newContent.charCodeAt(startIndex) === 10
+    ) {
+      newContent = newContent.slice(0, startIndex) + newContent.slice(startIndex + 1);
+    }
+
+    const removedLines = countLines(removedSlice);
+    return {
+      content: newContent,
+      detail: `removed ${removedLines} line${removedLines === 1 ? '' : 's'} (lines ${startLine}-${endLine})`,
+    };
+  }
+
+  if (operation.type === 'replace-text') {
+    const anchorIndex = getAnchorOccurrence(currentContent, operation.anchor, operation.line);
+    const startLine = lineNumberAtIndex(currentContent, anchorIndex);
+    return {
+      content:
+        currentContent.slice(0, anchorIndex) +
+        operation.content +
+        currentContent.slice(anchorIndex + operation.anchor.length),
+      detail: `line ${startLine}`,
+    };
+  }
+
+  if (operation.type === 'replace-regex') {
+    let regex;
+    try {
+      regex = new RegExp(operation.pattern);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new ProtocolError(`line ${operation.line}: invalid regex pattern: ${message}`);
+    }
+
+    const firstMatch = regex.exec(currentContent);
+    if (firstMatch === null) {
+      throw new ProtocolError(`line ${operation.line}: regex pattern not found`);
+    }
+    const firstIndex = firstMatch.index;
+    const firstLength = firstMatch[0].length;
+
+    const tail = currentContent.slice(firstIndex + Math.max(firstLength, 1));
+    const secondMatch = new RegExp(operation.pattern).exec(tail);
+    if (secondMatch !== null) {
+      throw new ProtocolError(
+        `line ${operation.line}: regex pattern matches multiple occurrences`,
+      );
+    }
+
+    const startLine = lineNumberAtIndex(currentContent, firstIndex);
+    return {
+      content:
+        currentContent.slice(0, firstIndex) +
+        operation.content +
+        currentContent.slice(firstIndex + firstLength),
+      detail: `line ${startLine}`,
+    };
+  }
+
+  throw new ProtocolError(`operation not supported: ${operation.type}`);
 }
 
 async function resolveCurrentContent(absolutePath, operationType) {
@@ -451,7 +743,11 @@ async function resolveCurrentContent(absolutePath, operationType) {
   if (
     operationType === 'insert-before' ||
     operationType === 'insert-after' ||
-    operationType === 'insert-after-line'
+    operationType === 'insert-after-line' ||
+    operationType === 'replace-block' ||
+    operationType === 'remove-block' ||
+    operationType === 'replace-text' ||
+    operationType === 'replace-regex'
   ) {
     throw new ProtocolError(`target file does not exist for ${operationType}: ${path.relative(repoRoot, absolutePath)}`);
   }
@@ -600,12 +896,11 @@ async function main() {
           currentContent = '';
         }
 
-        currentContent = applyOperationToContent(
-          operation,
-          currentContent ?? '',
-        );
+        const result = applyOperationToContent(operation, currentContent ?? '');
+        currentContent = result.content;
+        const detailSuffix = result.detail ? ` [${result.detail}]` : '';
         report.operations.push(
-          `${operation.type} ${cli.dryRun ? '(simulated)' : '(applied)'} -> ${fileEntry.relative}`,
+          `${operation.type} ${cli.dryRun ? '(simulated)' : '(applied)'} -> ${fileEntry.relative}${detailSuffix}`,
         );
       }
 

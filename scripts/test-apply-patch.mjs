@@ -433,10 +433,10 @@ Novo conteudo
       protocolFile,
       protocolFor(
         toRepoRelative(targetFile),
-        `<cmd:replace-block>
+        `<cmd:delete-file>
 content:|
 Nao entra
-</cmd:replace-block>`,
+</cmd:delete-file>`,
       ),
       'utf8',
     );
@@ -445,10 +445,394 @@ Nao entra
     assertCondition(result.status === 1, 'expected exit code 1');
     assertCondition(result.stdout.includes('status: failed'), 'expected failed status');
     assertCondition(
-      result.stdout.includes('command not supported in v1'),
+      result.stdout.includes('command not supported'),
       'expected unsupported command error',
     );
     assertCondition(typeof result.stderr === 'string', 'expected stderr string');
+  }, state);
+
+  await runTest('replace-block in --dry-run returns success', async () => {
+    const caseDir = await setupCase('replace-block-success');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-block>
+anchor_start: Linha A
+anchor_end: Linha C
+content:|
+Bloco novo
+</cmd:replace-block>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 0, 'expected exit code 0');
+    assertCondition(result.stdout.includes('status: success'), 'expected success status');
+    assertCondition(
+      result.stdout.includes('replace-block (simulated)'),
+      'expected simulated replace-block operation',
+    );
+    assertCondition(
+      result.stdout.includes('[lines '),
+      'expected line range detail in report',
+    );
+  }, state);
+
+  await runTest('replace-block with missing anchor_start fails', async () => {
+    const caseDir = await setupCase('replace-block-missing-start');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-block>
+anchor_start: Linha Z
+anchor_end: Linha C
+content:|
+Bloco novo
+</cmd:replace-block>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('anchor_start not found'),
+      'expected anchor_start missing error',
+    );
+  }, state);
+
+  await runTest('replace-block with duplicated anchor_start fails', async () => {
+    const caseDir = await setupCase('replace-block-duplicate-start');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent({ duplicateAnchor: true }), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-block>
+anchor_start: Linha A
+anchor_end: Linha B
+content:|
+Bloco novo
+</cmd:replace-block>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('anchor_start matches multiple occurrences'),
+      'expected duplicate anchor_start error',
+    );
+  }, state);
+
+  await runTest('replace-block with end before start fails', async () => {
+    const caseDir = await setupCase('replace-block-end-before-start');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-block>
+anchor_start: Linha C
+anchor_end: Linha A
+content:|
+Bloco novo
+</cmd:replace-block>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('anchor_end appears before anchor_start'),
+      'expected end-before-start error',
+    );
+  }, state);
+
+  await runTest('replace-block with empty content fails', async () => {
+    const caseDir = await setupCase('replace-block-empty-content');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-block>
+anchor_start: Linha A
+anchor_end: Linha C
+content:|
+</cmd:replace-block>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('requires non-empty content'),
+      'expected empty content error',
+    );
+  }, state);
+
+  await runTest('remove-block with confirm true in --dry-run returns success', async () => {
+    const caseDir = await setupCase('remove-block-success');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:remove-block>
+anchor_start: Linha A
+anchor_end: Linha C
+confirm: true
+</cmd:remove-block>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 0, 'expected exit code 0');
+    assertCondition(result.stdout.includes('status: success'), 'expected success status');
+    assertCondition(
+      result.stdout.includes('remove-block (simulated)'),
+      'expected simulated remove-block operation',
+    );
+    assertCondition(
+      result.stdout.includes('removed '),
+      'expected removed line count in detail',
+    );
+  }, state);
+
+  await runTest('remove-block without confirm true fails', async () => {
+    const caseDir = await setupCase('remove-block-no-confirm');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:remove-block>
+anchor_start: Linha A
+anchor_end: Linha C
+</cmd:remove-block>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes("requires 'confirm: true'"),
+      'expected confirm-required error',
+    );
+  }, state);
+
+  await runTest('replace-text in --dry-run returns success', async () => {
+    const caseDir = await setupCase('replace-text-success');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-text>
+anchor: Linha B
+content:|
+Linha B trocada
+</cmd:replace-text>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 0, 'expected exit code 0');
+    assertCondition(result.stdout.includes('status: success'), 'expected success status');
+    assertCondition(
+      result.stdout.includes('replace-text (simulated)'),
+      'expected simulated replace-text operation',
+    );
+  }, state);
+
+  await runTest('replace-text with multiple matches fails', async () => {
+    const caseDir = await setupCase('replace-text-multiple');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent({ duplicateAnchor: true }), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-text>
+anchor: Linha A
+content:|
+Linha trocada
+</cmd:replace-text>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('anchor matches multiple occurrences'),
+      'expected multiple anchor error',
+    );
+  }, state);
+
+  await runTest('replace-regex in --dry-run returns success', async () => {
+    const caseDir = await setupCase('replace-regex-success');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-regex>
+pattern: Linha B
+content:|
+Linha B regex
+</cmd:replace-regex>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 0, 'expected exit code 0');
+    assertCondition(result.stdout.includes('status: success'), 'expected success status');
+    assertCondition(
+      result.stdout.includes('replace-regex (simulated)'),
+      'expected simulated replace-regex operation',
+    );
+  }, state);
+
+  await runTest('replace-regex with invalid pattern fails', async () => {
+    const caseDir = await setupCase('replace-regex-invalid');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-regex>
+pattern: [unterminated
+content:|
+nope
+</cmd:replace-regex>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('invalid regex pattern'),
+      'expected invalid regex error',
+    );
+  }, state);
+
+  await runTest('replace-regex with zero matches fails', async () => {
+    const caseDir = await setupCase('replace-regex-zero');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent(), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-regex>
+pattern: Linha Z+
+content:|
+nope
+</cmd:replace-regex>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('regex pattern not found'),
+      'expected zero-match error',
+    );
+  }, state);
+
+  await runTest('replace-regex with multiple matches fails', async () => {
+    const caseDir = await setupCase('replace-regex-multiple');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    await writeFile(targetFile, baseContent({ duplicateAnchor: true }), 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-regex>
+pattern: Linha A
+content:|
+nope
+</cmd:replace-regex>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(
+      result.stdout.includes('regex pattern matches multiple occurrences'),
+      'expected multiple-match error',
+    );
+  }, state);
+
+  await runTest('failed edit operation does not partially write files', async () => {
+    const caseDir = await setupCase('edit-partial-write');
+    const targetFile = path.join(caseDir, 'target.md');
+    const protocolFile = path.join(caseDir, 'protocol.md');
+    const original = baseContent();
+    await writeFile(targetFile, original, 'utf8');
+    await writeFile(
+      protocolFile,
+      protocolFor(
+        toRepoRelative(targetFile),
+        `<cmd:replace-text>
+anchor: Linha B
+content:|
+Trocado
+</cmd:replace-text>
+
+<cmd:replace-text>
+anchor: Linha Z
+content:|
+Nao entra
+</cmd:replace-text>`,
+      ),
+      'utf8',
+    );
+
+    const result = runApplyPatch([toRepoRelative(protocolFile), '--dry-run']);
+    const after = await readFile(targetFile, 'utf8');
+    assertCondition(result.status === 1, 'expected exit code 1');
+    assertCondition(after === original, 'expected target file unchanged after failed run');
   }, state);
 
   console.log('');
