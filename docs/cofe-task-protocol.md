@@ -159,6 +159,7 @@ See:
 
 - `docs/examples/task-read-only.md`
 - `docs/examples/task-apply-patch.md`
+- Reusable templates: [`cofe-cmds/`](../../cofe-cmds/README.md)
 
 ## Chat command and planned npm command
 

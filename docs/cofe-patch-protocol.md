@@ -281,28 +281,10 @@ The textual report must include at least:
 
 ## 14. Simple protocol example
 
-```md
-# COFE Patch Protocol
+See:
 
-version: 1
-target_repo: expertos-tech/marp-template-gen
-
-[CHANGE-FILE: docs/example.md]
-
-<cmd:create-file>
-content:|
-# Example
-Initial content.
-</cmd:create-file>
-
-<cmd:append-file>
-content:|
-Additional line.
-</cmd:append-file>
-
-[VALIDATE]
-npm --prefix scripts run pre-run
-```
+- `docs/examples/` for didactic examples
+- Reusable templates: [`cofe-cmds/`](../../cofe-cmds/README.md)
 
 ## Chat command and planned npm command
 

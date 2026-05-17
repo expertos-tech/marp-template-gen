@@ -149,7 +149,9 @@ Implemented scope:
 - accept `--force` only to ignore the clean working tree validation;
 - do not execute shell commands declared in the protocol, only report them.
 
-The reference documentation for the protocol is in `docs/cofe-patch-protocol.md`.
+The reference documentation for the protocol is in [`docs/cofe-patch-protocol.md`](../docs/cofe-patch-protocol.md).
+
+**Reusable templates:** See [`cofe-cmds/`](../cofe-cmds/README.md) for ready-to-use patch templates.
 
 ## `task`
 
@@ -169,8 +171,11 @@ Flags:
 - `--explain`: print the planned operations as a tree and exit. No execution.
 - `--help`, `-h`: print usage.
 
-The reference documentation for the protocol is in `docs/cofe-task-protocol.md`.
-Sample tasks are available in `docs/examples/`.
+The reference documentation for the protocol is in [`docs/cofe-task-protocol.md`](../docs/cofe-task-protocol.md).
+
+Sample tasks and reusable templates are available in:
+- [`docs/examples/`](../docs/examples/) (didactic examples)
+- [`cofe-cmds/`](../cofe-cmds/README.md) (reusable templates ready to run)
 
 ## `test:apply-patch`
 

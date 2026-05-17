@@ -59,6 +59,9 @@ The COFE Protocol powers:
 - `*apply-patch` command: Applies COFE Patch files with Git safety.
 - Web UI automation: Chat agents generate COFE Markdown instructions; the local CLI executes and reports back.
 
+**Reusable command templates:**
+See [`cofe-cmds/`](../cofe-cmds/README.md) for a catalog of ready-to-run task and patch templates covering common scenarios such as validation, diagnostics, file creation, and block replacement.
+
 ### 3.2 Extraction to MCP / Standalone Integration
 
 The COFE Protocol is designed to be extracted and reused in other projects:
