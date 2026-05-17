@@ -55,6 +55,31 @@ content:|
 new block
 </cmd:create-file>
 
+<cmd:replace-block>
+anchor_start: exact start anchor
+anchor_end: exact end anchor
+content:|
+new block content
+</cmd:replace-block>
+
+<cmd:remove-block>
+anchor_start: exact start anchor
+anchor_end: exact end anchor
+confirm: true
+</cmd:remove-block>
+
+<cmd:replace-text>
+anchor: exact old text
+content:|
+new text
+</cmd:replace-text>
+
+<cmd:replace-regex>
+pattern: regex pattern
+content:|
+replacement text
+</cmd:replace-regex>
+
 [VALIDATE]
 npm --prefix scripts run pre-run
 ```
@@ -66,13 +91,112 @@ Parse rules:
 - `content:|` preserves line breaks exactly as written;
 - malformed command blocks fail with explicit line reference.
 
-## 4. Supported v1 operations
+## 4. Supported operations
+
+v1 operations (additive):
 
 - `insert-before`
 - `insert-after`
 - `insert-after-line`
 - `append-file`
 - `create-file`
+
+v1.1 operations (precise edits):
+
+- `replace-block`
+- `remove-block`
+- `replace-text`
+- `replace-regex`
+
+### 4.1 `replace-block`
+
+Format:
+
+```md
+<cmd:replace-block>
+anchor_start: exact start anchor
+anchor_end: exact end anchor
+content:|
+new block content
+</cmd:replace-block>
+```
+
+Rules:
+
+- `anchor_start` must occur exactly once in the file.
+- `anchor_end` must occur exactly once in the file.
+- `anchor_end` must appear after `anchor_start`.
+- The replaced range includes both anchors.
+- `content:|` preserves line breaks exactly as written.
+- Empty replacement content is rejected; use `remove-block` to remove a range.
+- The operation fails if the resolved range is invalid (anchor missing, duplicated, or end before start).
+- The operation report includes the affected 1-based line range when possible.
+
+### 4.2 `remove-block`
+
+Format:
+
+```md
+<cmd:remove-block>
+anchor_start: exact start anchor
+anchor_end: exact end anchor
+confirm: true
+</cmd:remove-block>
+```
+
+Rules:
+
+- `anchor_start` must occur exactly once in the file.
+- `anchor_end` must occur exactly once in the file.
+- `anchor_end` must appear after `anchor_start`.
+- The removed range includes both anchors.
+- `confirm: true` is required. The operation fails without it.
+- The operation fails if the resolved range is invalid.
+- The operation report includes how many lines were removed.
+- The `content:|` marker is not used by this command.
+
+### 4.3 `replace-text`
+
+Format:
+
+```md
+<cmd:replace-text>
+anchor: exact old text
+content:|
+new text
+</cmd:replace-text>
+```
+
+Rules:
+
+- `anchor` must occur exactly once in the file.
+- The exact anchor text is replaced by `content`.
+- `content:|` preserves line breaks exactly as written.
+- This operation is intended for small, exact replacements.
+- The operation fails on zero or multiple matches.
+
+### 4.4 `replace-regex`
+
+Format:
+
+```md
+<cmd:replace-regex>
+pattern: regex pattern
+content:|
+replacement text
+</cmd:replace-regex>
+```
+
+Rules:
+
+- `pattern` must be a valid JavaScript regular expression body.
+- Regex flags are not allowed in v1.1. The pattern is compiled without flags.
+- The regex must match exactly once. The operation fails on zero or multiple matches.
+- `content` is inserted literally. Backreference tokens such as `$&`, `$1` or `$<name>` are not interpolated.
+- Replacement functions, shell interpolation, environment interpolation and any runtime evaluation are not supported.
+- Invalid regex syntax produces a clear validation error and the protocol fails as a whole.
+- Escape regex metacharacters in `pattern` using standard JavaScript regex escaping (`\.`, `\(`, `\\`, etc.).
+- This command is powerful and should be used only when exact anchors are not practical.
 
 ## 5. Security rules
 
@@ -114,7 +238,7 @@ Every execution with saving must create a temporary branch before applying chang
 
 In v1, the executor must not execute shell commands contained in the protocol. These commands can only be listed in the report as recommended validation.
 
-## 11. Operational decisions for v1
+## 11. Operational decisions
 
 - Text anchor with zero occurrences fails.
 - Text anchor with multiple occurrences fails.
@@ -122,6 +246,11 @@ In v1, the executor must not execute shell commands contained in the protocol. T
 - `insert-after-line` fails if line is less than 1 or greater than total lines in file.
 - `append-file` creates file when target does not exist.
 - `create-file` fails if target already exists.
+- `replace-block` and `remove-block` require both anchors to occur exactly once and `anchor_end` to appear after `anchor_start`.
+- `remove-block` requires `confirm: true`.
+- `replace-text` requires the anchor to occur exactly once.
+- `replace-regex` compiles the pattern without flags, requires exactly one match and treats `content` as a literal string.
+- The v1.1 edit operations (`replace-block`, `remove-block`, `replace-text`, `replace-regex`) keep the same security model as v1: unsafe paths are blocked, absolute paths are blocked, `..` segments are blocked, operations remain all-or-nothing, `--dry-run` simulates without saving, real apply requires Git safety checks, and `[VALIDATE]` commands are reported but not executed.
 - Execution is all-or-nothing for operation failures. If any operation fails, no file is saved.
 - `--force` ignores only clean working tree validation.
 - `--force` does not ignore merge, rebase, cherry-pick, revert, conflicts, invalid protocol, or unsafe path.
@@ -140,12 +269,15 @@ The textual report must include at least:
 - errors and blocks, when they exist;
 - recommended next steps.
 
-## 13. v1 limitations
+## 13. v1.1 limitations
 
 - Does not execute shell embedded in the protocol.
 - Does not implement semantic merge strategies.
 - Does not resolve conflicts automatically.
-- Does not apply operations outside the supported v1 list.
+- Does not apply operations outside the supported list (v1 + v1.1).
+- Does not accept regex flags in `replace-regex`.
+- Does not interpolate backreferences in replacement content.
+- Does not support replacement functions or any runtime evaluation.
 
 ## 14. Simple protocol example
 

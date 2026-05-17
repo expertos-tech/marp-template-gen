@@ -130,15 +130,18 @@ Executes the MTG Patch Protocol v1 with deterministic validations of security an
 npm --prefix scripts run apply-patch -- <file.md> [--dry-run] [--force]
 ```
 
-Implemented scope for v1:
+Implemented scope:
 
 - parse protocol blocks `[CHANGE-FILE: ...]` with `<cmd:...>`;
-- support only `insert-before`, `insert-after`, `insert-after-line`, `append-file` and `create-file`;
+- support `insert-before`, `insert-after`, `insert-after-line`, `append-file`, `create-file` (v1);
+- support `replace-block`, `remove-block`, `replace-text`, `replace-regex` (v1.1);
 - validate paths and block writing outside the repository root;
 - fail when text anchors have zero or multiple matches;
 - use 1-based line numbers for `insert-after-line` and fail out of range;
 - create file on `append-file` when target does not exist;
 - fail on `create-file` when target already exists;
+- require `confirm: true` for `remove-block`;
+- reject regex flags and reject `replace-regex` patterns that do not match exactly once;
 - apply all operations in memory first (all-or-nothing for operation failures);
 - require a clean working tree by default for execution with saving, including untracked files;
 - create temporary branch `tmp/mtg-patch/YYYYMMDD-HHMMSS` on execution with saving;
