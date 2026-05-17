@@ -164,7 +164,7 @@ npm --prefix scripts run task -- <file.md>
 Default file is `tmp/prompt.md` when no argument is provided.
 
 Supported blocks: `## GOAL`, `## ALLOWED_CHANGES`, `## READ`, `## RUN`, `## APPLY_PATCH`, `## REPORT`.
-Required blocks: `## GOAL` and `## REPORT`. `GOAL` captures intent, `REPORT` lists the expected output items, and both blocks are enforced by `run-task.mjs`.
+Required blocks: `## GOAL` and `## REPORT`. `GOAL` captures intent, `REPORT` lists the expected output items, and both blocks are enforced by `run-task.mjs`. See [`docs/cofe-task-protocol.md`](../docs/cofe-task-protocol.md) for the full specification.
 
 Flags:
 

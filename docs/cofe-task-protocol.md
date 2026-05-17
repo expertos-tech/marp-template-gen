@@ -60,7 +60,7 @@ Parse rules:
 - Duplicate blocks are rejected.
 - `GOAL` and `REPORT` blocks are required.
 - `READ`, `RUN` and `ALLOWED_CHANGES` blocks are bullet lists (`- value`).
-- `APPLY_PATCH` is a list of entries. Each entry starts with `file: <path>` and optionally adds `dry_run: true|false` (preferred for new files) or `dryRun: true|false` (backward-compatible alias supported by the runner), plus `force: true|false`, before the next `file:`.
+- `APPLY_PATCH` is a list of entries. Each entry starts with `file: <path>` and optionally adds `dry_run: true|false` (use in new files) or `dryRun: true|false` (deprecated alias supported for backward compatibility), plus `force: true|false`, before the next `file:`.
 - Unknown fields inside `APPLY_PATCH` entries cause the task to fail.
 - `REPORT` is a bullet list copied verbatim into the final report.
 
