@@ -21,7 +21,7 @@ export async function resolveTargetFromSource({
   if (rawTarget.endsWith('/')) {
     const dir = resolveInputPath(rawTarget);
     if (!(await isDirectory(dir))) {
-      fail(`diretorio de destino nao existe: ${rawTarget}`);
+      fail(`target directory does not exist: ${rawTarget}`);
     }
     const target = path.join(dir, targetBaseName);
     await validateResolvedTarget(target, extension, failIfExists);
@@ -42,20 +42,20 @@ export async function resolveTargetFromSource({
 async function validateResolvedTarget(targetPath, expectedExtension, failIfExists) {
   const destinationExt = path.extname(targetPath).toLowerCase();
   if (destinationExt !== expectedExtension) {
-    fail(`destino deve terminar com ${expectedExtension}: ${targetPath}`);
+    fail(`target must end with ${expectedExtension}: ${targetPath}`);
   }
 
   const destinationExists = await exists(targetPath);
   if (destinationExists && !(await isFile(targetPath))) {
-    fail(`destino existe e nao e arquivo regular: ${targetPath}`);
+    fail(`target exists and is not a regular file: ${targetPath}`);
   }
 
   if (destinationExists && failIfExists) {
-    fail(`destino ja existe e exige confirmacao explicita: ${targetPath}`);
+    fail(`target already exists and requires explicit confirmation: ${targetPath}`);
   }
 
   const targetDir = path.dirname(targetPath);
   if (!(await isDirectory(targetDir))) {
-    fail(`diretorio do destino nao existe: ${targetDir}`);
+    fail(`target directory does not exist: ${targetDir}`);
   }
 }

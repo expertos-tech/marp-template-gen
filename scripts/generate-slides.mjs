@@ -3,19 +3,20 @@ import { spawnSync } from 'node:child_process';
 import { fail, readText, scriptsDir, writeText } from './lib.mjs';
 
 function usage() {
-  console.log(`Uso:
+  console.log(`Usage:
   npm --prefix scripts run generate-slides -- <model> <source> [target]
 
-Objetivo:
-  Gerar um Markdown Marp final com base no template model.md, incluindo
-  preenchimento de placeholders, CSS embutido e limpeza automatica de
-  comentarios de instrucao.
+Goal:
+  Generate a final Marp Markdown based on the model.md template, including
+  placeholder substitution, embedded CSS and automatic cleanup of
+  instruction comments.
 
-Regras:
-  - Executa o fluxo de validacao do to-marp para resolver MODEL_DIR/SOURCE/TARGET
-  - Preenche o bloco <style>{{EMBEDDED_MODEL_CSS}}</style> com CSS efetivo
-  - Gera capa + slides de conteudo + fechamento
-  - Executa strip-instructions no arquivo gerado antes de finalizar`);
+Rules:
+  - Runs the to-marp validation flow to resolve MODEL_DIR/SOURCE/TARGET
+  - Fills the <style>{{EMBEDDED_MODEL_CSS}}</style> block with effective CSS
+  - Generates cover + content slides + closing
+  - Runs strip-instructions on the generated file before finishing
+  - Runs embed-images on the generated file before finishing`);
 }
 
 function runNodeScript(scriptName, args = []) {
@@ -26,7 +27,7 @@ function runNodeScript(scriptName, args = []) {
 
   if (result.status !== 0) {
     const stderr = result.stderr.trim();
-    fail(stderr || `${scriptName} falhou.`);
+    fail(stderr || `${scriptName} failed.`);
   }
 
   return result.stdout;
@@ -73,7 +74,7 @@ function extractClassBlocks(modelContent) {
   const matches = Array.from(modelContent.matchAll(markerRegex));
 
   if (matches.length === 0) {
-    fail('model.md sem blocos de slide com <!-- _class: ... -->.');
+    fail('model.md has no slide blocks with <!-- _class: ... -->.');
   }
 
   const firstMarkerIndex = matches[0].index ?? 0;
@@ -163,7 +164,7 @@ function buildSlides({ source, preambleTemplate, blocks, embeddedCss }) {
   const closingTemplate = blocks.get('closing');
 
   if (!coverTemplate || !contentTemplate || !closingTemplate) {
-    fail('model.md precisa ter blocos cover, content e closing para gerar slides.');
+    fail('model.md must contain cover, content and closing blocks to generate slides.');
   }
 
   const subtitle = source.sections[0]?.title || 'Panorama';
@@ -221,7 +222,7 @@ async function main() {
   const targetPath = parsed.TARGET;
 
   if (!modelDir || !sourcePath || !targetPath) {
-    fail('to-marp nao retornou MODEL_DIR, SOURCE e TARGET de forma valida.');
+    fail('to-marp did not return valid MODEL_DIR, SOURCE and TARGET.');
   }
 
   const modelPath = path.join(modelDir, 'model.md');

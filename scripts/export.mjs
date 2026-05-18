@@ -14,16 +14,19 @@ import { resolveTargetFromSource } from './validate-target.mjs';
 const SUPPORTED_TYPES = new Set(['pdf', 'html', 'png', 'pptx']);
 
 function usage() {
-  console.log(`Uso:
+  console.log(`Usage:
   npm --prefix scripts run marp-export -- <type> <source.md> [target]
 
-Tipos:
+Types:
   pdf | html | png | pptx
 
-Exemplos:
-  npm --prefix scripts run marp-export -- pdf tmp/apresentacao-slides.md
-  npm --prefix scripts run marp-export -- html tmp/apresentacao-slides.md output/
-  npm --prefix scripts run marp-export -- png tmp/apresentacao-slides.md output/apresentacao.png
+Examples:
+  npm --prefix scripts run marp-export -- pdf tmp/presentation-slides.md
+  npm --prefix scripts run marp-export -- html tmp/presentation-slides.md output/
+  npm --prefix scripts run marp-export -- png tmp/presentation-slides.md output/presentation.png
+
+Requirements:
+  - Uses '@marp-team/marp-cli' via 'npx --yes'. Network may be needed on first run.
 `);
 }
 
@@ -39,27 +42,27 @@ function runNodeScript(scriptName, args = []) {
 
   if (result.status !== 0) {
     const stderr = result.stderr.trim();
-    fail(stderr || `${scriptName} falhou.`);
+    fail(stderr || `${scriptName} failed.`);
   }
 }
 
 function validateSelfContained(content, sourcePath) {
   if (!/<style>[\s\S]*<\/style>/m.test(content)) {
-    fail(`arquivo sem bloco <style> embutido: ${sourcePath}`);
+    fail(`file missing embedded <style> block: ${sourcePath}`);
   }
 
   if (/\{\{[A-Z0-9_]+\}\}/.test(content)) {
-    fail(`arquivo possui placeholders pendentes: ${sourcePath}`);
+    fail(`file has pending placeholders: ${sourcePath}`);
   }
 
   const markdownLocalImage = /!\[[^\]]*\]\((?!https?:\/\/|data:)[^)]+\)/i;
   if (markdownLocalImage.test(content)) {
-    fail(`arquivo possui referencia de imagem local nao embutida: ${sourcePath}`);
+    fail(`file has unembedded local image reference: ${sourcePath}`);
   }
 
   const htmlLocalImage = /<img\b[^>]*\bsrc\s*=\s*(['"])(?!https?:\/\/|data:).*?\1/i;
   if (htmlLocalImage.test(content)) {
-    fail(`arquivo possui <img src> local nao embutido: ${sourcePath}`);
+    fail(`file has unembedded local <img src>: ${sourcePath}`);
   }
 }
 
@@ -85,7 +88,7 @@ function runMarp(type, sourcePath, targetPath) {
 
   if (result.status !== 0) {
     const stderr = result.stderr.trim();
-    fail(stderr || `falha ao exportar ${type} com Marp CLI.`);
+    fail(stderr || `failed to export ${type} with Marp CLI.`);
   }
 }
 
@@ -107,13 +110,13 @@ async function main() {
   const type = rawType.toLowerCase();
 
   if (!SUPPORTED_TYPES.has(type)) {
-    fail(`tipo de exportacao invalido: ${rawType}`);
+    fail(`invalid export type: ${rawType}`);
   }
 
   ensureMarkdownPath('source', rawSource);
   const sourcePath = resolveInputPath(rawSource);
   if (!(await isFile(sourcePath))) {
-    fail(`source nao existe ou nao e arquivo: ${rawSource}`);
+    fail(`source does not exist or is not a file: ${rawSource}`);
   }
 
   const sourceContent = await readText(sourcePath);
